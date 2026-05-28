@@ -23,14 +23,7 @@ app.config.errorHandler = (error, _instance, info) => {
 }
 
 window.addEventListener('unhandledrejection', (event) => {
-  const reason = event.reason as { status?: number } | undefined
-  if (reason?.status === 401) {
-    if (router.currentRoute.value.path !== '/login') {
-      void router.replace('/login')
-    }
-    return
-  }
-
+  console.error('[UnhandledRejection]', event.reason)
   if (router.currentRoute.value.path !== '/500') {
     void router.replace('/500')
   }

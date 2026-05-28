@@ -32,7 +32,7 @@
               <div
                 class="w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center"
               >
-                <span class="text-sm font-bold">{{ authStore.user?.name?.charAt(0) || 'U' }}</span>
+                <span class="text-sm font-bold">UI</span>
               </div>
             </label>
             <ul
@@ -40,28 +40,17 @@
               class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200"
             >
               <li class="menu-title px-4 py-2 border-b border-base-200/50 mb-1">
-                <div class="font-bold text-base-content">{{ authStore.user?.name || 'User' }}</div>
-                <div class="font-normal text-xs text-base-content/60">
-                  {{ authStore.user?.email || 'user@example.com' }}
-                </div>
+                <div class="font-bold text-base-content">Frontend Only</div>
+                <div class="font-normal text-xs text-base-content/60">No backend auth</div>
               </li>
               <li>
                 <a class="py-2" @click="handleNotImplemented">
-                  <User class="w-4 h-4" />
-                  Profile
+                  {{ t('page.components.guide') }}
                 </a>
               </li>
               <li>
                 <a class="py-2" @click="handleNotImplemented">
-                  <Settings class="w-4 h-4" />
-                  Settings
-                </a>
-              </li>
-              <div class="divider my-1"></div>
-              <li>
-                <a @click="handleLogout" class="text-error py-2">
-                  <LogOut class="w-4 h-4" />
-                  {{ t('ui.logout') }}
+                  {{ t('page.tools.guide') }}
                 </a>
               </li>
             </ul>
@@ -100,28 +89,21 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from 'vue'
-import { Menu, User, Settings, LogOut } from 'lucide-vue-next'
+import { Menu } from 'lucide-vue-next'
 import { RouterView } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { DateTime } from 'luxon'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
 import { message } from '@/shared/utils/message'
 import { Breadcrumb, MouseGradient, SidebarMenu, TopbarControls } from '@/shared/components'
 
 const router = useRouter()
 const { t } = useI18n()
-const authStore = useAuthStore()
 const appStore = useAppStore()
 
 const isDrawerOpen = ref(false)
 const DESKTOP_BREAKPOINT = 1024
-
-const handleLogout = () => {
-  authStore.logout()
-  void router.replace('/')
-}
 
 const handleNotImplemented = () => {
   message.info(t('message.comingSoon'))

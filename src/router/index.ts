@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { replaceWith500IfNeeded } from '@/shared/router/replaceWith500IfNeeded'
-import { useAuthStore } from '@/stores/auth'
-import { useFrontAuthStore } from '@/stores/frontAuth'
 import i18n from '@/locales'
 
 declare module 'vue-router' {
@@ -27,31 +25,12 @@ const routes: RouteRecordRaw[] = [
         name: 'landing',
         meta: { title: 'landing.title' },
         component: () => import('@/pages/LandingPage.vue')
-      },
-      {
-        path: 'front/login',
-        name: 'frontLogin',
-        meta: { title: 'page.login' },
-        component: () => import('@/pages/FrontLoginPage.vue')
-      },
-      {
-        path: 'front',
-        name: 'front',
-        meta: { requiresAuth: true, title: 'page.front' },
-        component: () => import('@/pages/FrontPage.vue')
-      },
-      {
-        path: 'login',
-        name: 'login',
-        meta: { title: 'page.login' },
-        component: () => import('@/pages/LoginPage.vue')
       }
     ]
   },
   {
     path: '/',
     component: Layout,
-    meta: { requiresAuth: true },
     children: [
       {
         path: 'dashboard',
@@ -126,45 +105,21 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/ValidationPage.vue')
       },
       {
-        path: 'users',
-        name: 'users',
-        meta: { requiresAuth: true, title: 'page.users' },
-        component: () => import('@/pages/UserPage.vue')
-      },
-      {
-        path: 'members',
-        name: 'members',
-        meta: { requiresAuth: true, title: 'page.members' },
-        component: () => import('@/pages/MemberPage.vue')
-      },
-      {
-        path: 'system-configs',
-        name: 'system-configs',
-        meta: { requiresAuth: true, title: 'page.systemConfigs' },
-        component: () => import('@/pages/SystemConfigPage.vue')
-      },
-      {
         path: 'examples',
         name: 'examples',
         meta: { title: 'page.examples.guide' },
         component: () => import('@/pages/ExamplesGuidePage.vue')
       },
       {
-        path: 'examples/api',
-        name: 'examples-api',
-        meta: { requiresAuth: true, title: 'page.api' },
-        component: () => import('@/pages/ApiPage.vue')
-      },
-      {
         path: 'examples/form',
         name: 'examples-form',
-        meta: { requiresAuth: true, title: 'page.form' },
+        meta: { title: 'page.form' },
         component: () => import('@/pages/FormPage.vue')
       },
       {
         path: 'examples/store',
         name: 'examples-store',
-        meta: { requiresAuth: true, title: 'page.store' },
+        meta: { title: 'page.store' },
         component: () => import('@/pages/StorePage.vue')
       },
       {
@@ -216,19 +171,7 @@ router.afterEach((to) => {
   }
 })
 
-router.beforeEach((to) => {
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
-  if (!requiresAuth) return true
-
-  const isFront = to.path.startsWith('/front')
-  const store = isFront ? useFrontAuthStore() : useAuthStore()
-  if (!store.isAuthenticated) {
-    return {
-      path: isFront ? '/front/login' : '/login',
-      query: { redirect: to.fullPath }
-    }
-  }
-
+router.beforeEach((_to) => {
   return true
 })
 

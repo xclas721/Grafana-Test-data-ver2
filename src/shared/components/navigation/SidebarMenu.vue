@@ -80,7 +80,7 @@ import { ref } from 'vue'
 import type { Component } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { LayoutDashboard, Users, BookOpen, Box, Wrench, ChevronRight, Info } from 'lucide-vue-next'
+import { LayoutDashboard, BookOpen, Box, Wrench, ChevronRight, Info } from 'lucide-vue-next'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -117,24 +117,12 @@ const menuTree = ref<MenuItem[]>([
     isCollapsed: true
   },
   {
-    id: 'management',
-    i18nCode: 'page.management',
-    icon: Users,
-    isCollapsed: true,
-    children: [
-      { id: 'users', path: '/users', i18nCode: 'page.users' },
-      { id: 'members', path: '/members', i18nCode: 'page.members' },
-      { id: 'system-configs', path: '/system-configs', i18nCode: 'page.systemConfigs' }
-    ]
-  },
-  {
     id: 'examples',
     i18nCode: 'page.examples',
     icon: BookOpen,
     isCollapsed: true,
     children: [
       { id: 'examples-guide', path: '/examples', i18nCode: 'page.examples.guide' },
-      { id: 'examples-api', path: '/examples/api', i18nCode: 'page.api' },
       { id: 'examples-form', path: '/examples/form', i18nCode: 'page.form' },
       { id: 'examples-store', path: '/examples/store', i18nCode: 'page.store' }
     ]
