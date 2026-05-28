@@ -105,6 +105,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/ValidationPage.vue')
       },
       {
+        path: 'test-data/input',
+        name: 'test-data-input',
+        meta: { title: 'Test Data Input' },
+        component: () => import('@/pages/TestDataInputPage.vue')
+      },
+      {
         path: 'examples',
         name: 'examples',
         meta: { title: 'page.examples.guide' },

@@ -158,7 +158,8 @@ const menuTree = ref<MenuItem[]>([
       { id: 'tools-guide', path: '/tools', i18nCode: 'page.tools.guide' },
       { id: 'tools-files', path: '/tools/files', i18nCode: 'page.files' },
       { id: 'tools-format', path: '/tools/format', i18nCode: 'page.format' },
-      { id: 'tools-validation', path: '/tools/validation', i18nCode: 'page.validation' }
+      { id: 'tools-validation', path: '/tools/validation', i18nCode: 'page.validation' },
+      { id: 'tools-test-data', path: '/test-data/input', i18nCode: 'page.form' }
     ]
   }
 ])
