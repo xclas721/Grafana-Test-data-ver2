@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "composite": false,
+    "types": ["vitest/globals", "node"],
+    "skipLibCheck": true
+  },
+  "include": ["env.d.ts", "src/**/__tests__/**/*.ts", "src/test/**/*.ts"],
+  "exclude": []
+}
