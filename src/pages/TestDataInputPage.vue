@@ -13,6 +13,7 @@ import PerformanceSection from '@/features/test-data/sections/PerformanceSection
 import ErrorHandlingSection from '@/features/test-data/sections/ErrorHandlingSection.vue'
 import BulkProgressPanel from '@/features/test-data/components/BulkProgressPanel.vue'
 import { useElasticsearchInsert } from '@/features/test-data/useElasticsearchInsert'
+import { useScheduledBatchInsert } from '@/features/test-data/useScheduledBatchInsert'
 import { useTestDataForm } from '@/features/test-data/useTestDataForm'
 
 const modeOptions: SelectOption[] = [
@@ -57,6 +58,22 @@ const { posting, progress, insertOne, batchInsert, closeProgress } = useElastics
   refreshAutoTimeRange,
   setStatus
 })
+
+const {
+  scheduleEnabled,
+  scheduleIntervalSeconds,
+  scheduleRunning,
+  nextRunInSeconds,
+  onToggleScheduleEnabled,
+  onUpdateScheduleIntervalSeconds,
+  startSchedule,
+  stopSchedule
+} = useScheduledBatchInsert({
+  batchInsert,
+  setBatchDays: (days) => {
+    form.batchDays = days
+  }
+})
 </script>
 
 <template>
@@ -84,7 +101,12 @@ const { posting, progress, insertOne, batchInsert, closeProgress } = useElastics
       <Select v-model="form.mode" label="產品模式" :options="modeOptions" class="min-w-[120px]" />
       <Input v-model="form.currentDate" type="date" label="基準日期" class="w-36" />
       <Input v-model="form.batchSize" label="批次筆數" class="w-28" />
-      <Input v-model="form.batchDays" label="生成天數" class="w-28" />
+      <Input
+        v-model="form.batchDays"
+        label="生成天數"
+        class="w-28"
+        :disabled="!form.enableAutoTimeRange || scheduleEnabled"
+      />
       <Button variant="outline" @click="loadDefaults">載入預設值</Button>
       <Button variant="primary" :disabled="!isWeightValid" @click="generateRandomFields">
         隨機生成欄位
@@ -95,6 +117,35 @@ const { posting, progress, insertOne, batchInsert, closeProgress } = useElastics
       <Button variant="primary" :disabled="posting || !isWeightValid" @click="batchInsert">
         批量生成並 POST
       </Button>
+      <label class="flex items-center gap-1.5 text-xs pb-2 cursor-pointer">
+        <input
+          type="checkbox"
+          class="checkbox checkbox-sm"
+          :checked="scheduleEnabled"
+          @change="onToggleScheduleEnabled(($event.target as HTMLInputElement).checked)"
+        />
+        自動 POST
+      </label>
+      <Input
+        :model-value="String(scheduleIntervalSeconds)"
+        type="number"
+        label="間隔(秒)"
+        class="w-24"
+        :disabled="!scheduleEnabled"
+        @update:model-value="
+          (v) => onUpdateScheduleIntervalSeconds(Math.max(1, Number.parseInt(String(v), 10) || 1))
+        "
+      />
+      <Button
+        :variant="scheduleRunning ? 'outline' : 'info'"
+        :disabled="!scheduleEnabled || posting"
+        @click="scheduleRunning ? stopSchedule() : startSchedule()"
+      >
+        {{ scheduleRunning ? '停止自動' : '開始自動' }}
+      </Button>
+      <span v-if="scheduleRunning" class="text-xs text-base-content/60 pb-2">
+        下一次：{{ nextRunInSeconds }} 秒
+      </span>
       <span v-if="!isWeightValid" class="text-xs text-warning pb-2">
         ARes/RReq 權重需各為 100% 才能隨機生成
       </span>

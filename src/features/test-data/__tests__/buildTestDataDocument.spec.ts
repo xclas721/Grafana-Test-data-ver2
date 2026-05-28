@@ -46,4 +46,18 @@ describe('buildTestDataDocument', () => {
     expect(document.first_seen_timestamp).toBe(ts)
     expect(fullIndex).toBe('acs-transaction-2024-06-15')
   })
+
+  it('預設附加 browserGeoIP 與 deviceGeoIP', () => {
+    const form = getFormDataFromState({
+      mode: 'acs',
+      aresTransStatus: 'Y',
+      transStatus: 'Y',
+      merchantCountryCode: '158',
+      enableBrowserGeoIPRandom: true,
+      enableDeviceGeoIPRandom: true
+    })
+    const { document } = buildTestDataDocument(form, 'acs-transaction')
+    expect(document.browserGeoIP).toBeTruthy()
+    expect(document.deviceGeoIP).toBeTruthy()
+  })
 })

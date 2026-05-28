@@ -1,3 +1,5 @@
+import { attachGeoIpToDocument } from '@/features/test-data/geoIpDocument'
+
 export type TestDataFormMap = Record<string, string>
 
 export function getFormDataFromState(state: Record<string, unknown>): TestDataFormMap {
@@ -171,6 +173,8 @@ export function buildTestDataDocument(
   } else {
     doc.mastercardMessageExtension = null
   }
+
+  attachGeoIpToDocument(doc, form)
 
   return { document: doc, indexBase, fullIndex, utcDateStr }
 }
