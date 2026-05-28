@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
 import { Menu } from 'lucide-vue-next'
 import { useAppStore } from '@/stores/app'
 import { DateTime } from 'luxon'
 import { Button, TopbarControls } from '@/shared/components'
 
 const router = useRouter()
-const { t } = useI18n()
 const appStore = useAppStore()
 
 const currentTime = ref('')
@@ -18,7 +16,7 @@ const updateCurrentTime = () => {
 }
 
 const goDashboard = () => {
-  void router.push('/dashboard')
+  void router.push('/test-data/input')
 }
 
 onMounted(() => {
@@ -36,8 +34,11 @@ onUnmounted(() => {
 <template>
   <header class="navbar bg-base-100 border-b border-base-200 px-4 md:px-6 min-h-14">
     <div class="flex-1">
-      <RouterLink to="/" class="text-xl font-bold text-base-content hover:opacity-80">
-        {{ t('landing.title') }}
+      <RouterLink
+        to="/test-data/input"
+        class="text-xl font-bold text-base-content hover:opacity-80"
+      >
+        Test Data Generator
       </RouterLink>
     </div>
     <nav class="flex-none flex items-center gap-2">
@@ -51,13 +52,13 @@ onUnmounted(() => {
           class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200"
         >
           <li>
-            <a @click="goDashboard">{{ t('page.dashboard') }}</a>
+            <a @click="goDashboard">Test Data Input</a>
           </li>
         </ul>
       </div>
       <div class="divider divider-horizontal mx-0 hidden sm:flex"></div>
       <Button variant="primary" class="btn-sm hidden sm:inline-flex" @click="goDashboard">
-        {{ t('page.dashboard') }}
+        Test Data Input
       </Button>
     </nav>
   </header>

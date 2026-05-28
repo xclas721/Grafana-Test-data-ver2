@@ -19,41 +19,17 @@
 
         <!-- Breadcrumb (Left) -->
         <div class="flex-1 flex items-center overflow-hidden">
-          <Breadcrumb :home-path="'/dashboard'" class="!mb-0" />
+          <Breadcrumb :home-path="'/test-data/input'" class="!mb-0" />
         </div>
 
         <!-- Actions (Right) -->
         <div class="flex-none flex items-center gap-1 sm:gap-2">
           <TopbarControls :current-time="currentTime" />
 
-          <!-- User Dropdown -->
-          <div class="dropdown dropdown-end ml-1 sm:ml-2">
-            <label tabindex="0" class="btn btn-ghost btn-circle avatar">
-              <div
-                class="w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center"
-              >
-                <span class="text-sm font-bold">UI</span>
-              </div>
-            </label>
-            <ul
-              tabindex="0"
-              class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52 border border-base-200"
-            >
-              <li class="menu-title px-4 py-2 border-b border-base-200/50 mb-1">
-                <div class="font-bold text-base-content">Frontend Only</div>
-                <div class="font-normal text-xs text-base-content/60">No backend auth</div>
-              </li>
-              <li>
-                <a class="py-2" @click="handleNotImplemented">
-                  {{ t('page.components.guide') }}
-                </a>
-              </li>
-              <li>
-                <a class="py-2" @click="handleNotImplemented">
-                  {{ t('page.tools.guide') }}
-                </a>
-              </li>
-            </ul>
+          <div
+            class="ml-1 sm:ml-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold"
+          >
+            Test Data Mode
           </div>
         </div>
       </div>
@@ -95,7 +71,6 @@ import { useI18n } from 'vue-i18n'
 import { DateTime } from 'luxon'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
-import { message } from '@/shared/utils/message'
 import { Breadcrumb, MouseGradient, SidebarMenu, TopbarControls } from '@/shared/components'
 
 const router = useRouter()
@@ -104,10 +79,6 @@ const appStore = useAppStore()
 
 const isDrawerOpen = ref(false)
 const DESKTOP_BREAKPOINT = 1024
-
-const handleNotImplemented = () => {
-  message.info(t('message.comingSoon'))
-}
 
 // 當前時間（實時更新）
 const currentTime = ref('')

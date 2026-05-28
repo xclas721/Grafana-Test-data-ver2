@@ -61,17 +61,6 @@
         </li>
       </ul>
     </div>
-    <div
-      class="flex-shrink-0 border-t border-base-300 w-full min-w-0 flex items-stretch mt-auto py-2"
-    >
-      <RouterLink
-        to="/about"
-        class="nav-link flex items-center gap-2 py-2.5 px-3 no-underline text-inherit hover:bg-black/5 rounded-lg w-full min-w-0"
-      >
-        <Info class="w-5 h-5 shrink-0" aria-hidden="true" />
-        <span>{{ t('page.about') }}</span>
-      </RouterLink>
-    </div>
   </div>
 </template>
 
@@ -80,7 +69,7 @@ import { ref } from 'vue'
 import type { Component } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { LayoutDashboard, BookOpen, Box, Wrench, ChevronRight, Info } from 'lucide-vue-next'
+import { Wrench, ChevronRight } from 'lucide-vue-next'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -110,57 +99,11 @@ const isGroupOpen = (item: MenuItem) => {
 
 const menuTree = ref<MenuItem[]>([
   {
-    id: 'dashboard',
-    path: '/dashboard',
-    i18nCode: 'page.dashboard',
-    icon: LayoutDashboard,
-    isCollapsed: true
-  },
-  {
-    id: 'examples',
-    i18nCode: 'page.examples',
-    icon: BookOpen,
-    isCollapsed: true,
-    children: [
-      { id: 'examples-guide', path: '/examples', i18nCode: 'page.examples.guide' },
-      { id: 'examples-form', path: '/examples/form', i18nCode: 'page.form' },
-      { id: 'examples-store', path: '/examples/store', i18nCode: 'page.store' }
-    ]
-  },
-  {
-    id: 'components',
-    i18nCode: 'page.components',
-    icon: Box,
-    isCollapsed: true,
-    children: [
-      { id: 'components-guide', path: '/components/guide', i18nCode: 'page.components.guide' },
-      {
-        id: 'components-buttons',
-        path: '/components/buttons',
-        i18nCode: 'page.components.buttons'
-      },
-      { id: 'components-forms', path: '/components/forms', i18nCode: 'page.components.forms' },
-      { id: 'components-data', path: '/components/data', i18nCode: 'page.components.data' },
-      { id: 'components-modal', path: '/components/modal', i18nCode: 'page.components.modal' },
-      {
-        id: 'components-feedback',
-        path: '/components/feedback',
-        i18nCode: 'page.components.feedback'
-      }
-    ]
-  },
-  {
     id: 'tools',
     i18nCode: 'page.tools',
     icon: Wrench,
     isCollapsed: true,
-    children: [
-      { id: 'tools-guide', path: '/tools', i18nCode: 'page.tools.guide' },
-      { id: 'tools-files', path: '/tools/files', i18nCode: 'page.files' },
-      { id: 'tools-format', path: '/tools/format', i18nCode: 'page.format' },
-      { id: 'tools-validation', path: '/tools/validation', i18nCode: 'page.validation' },
-      { id: 'tools-test-data', path: '/test-data/input', i18nCode: 'page.form' }
-    ]
+    children: [{ id: 'tools-test-data', path: '/test-data/input', i18nCode: 'page.form' }]
   }
 ])
 

@@ -20,21 +20,19 @@ describe('router (frontend-only)', () => {
     await router.push('/')
   })
 
-  describe('no auth guard', () => {
-    it('可直接進入 /dashboard', async () => {
-      await router.push('/dashboard')
-      expect(router.currentRoute.value.path).toBe('/dashboard')
-    })
+  it('根路由會導向 /test-data/input', async () => {
+    await router.push('/')
+    expect(router.currentRoute.value.path).toBe('/test-data/input')
   })
 
-  describe('removed backend routes', () => {
-    it('訪問 /users 會導向 /404', async () => {
-      await router.push('/users')
+  describe('removed showcase routes', () => {
+    it('訪問 /dashboard 會導向 /404', async () => {
+      await router.push('/dashboard')
       expect(router.currentRoute.value.path).toBe('/404')
     })
 
-    it('訪問 /front/login 會導向 /404', async () => {
-      await router.push('/front/login')
+    it('訪問 /components 會導向 /404', async () => {
+      await router.push('/components')
       expect(router.currentRoute.value.path).toBe('/404')
     })
   })

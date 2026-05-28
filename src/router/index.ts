@@ -13,126 +13,20 @@ declare module 'vue-router' {
 
 const Layout = () => import('@/layouts/MainLayout.vue')
 
-const PublicLayout = () => import('@/layouts/PublicLayout.vue')
-
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: PublicLayout,
-    children: [
-      {
-        path: '',
-        name: 'landing',
-        meta: { title: 'landing.title' },
-        component: () => import('@/pages/LandingPage.vue')
-      }
-    ]
+    redirect: '/test-data/input'
   },
   {
     path: '/',
     component: Layout,
     children: [
       {
-        path: 'dashboard',
-        name: 'dashboard',
-        meta: { title: 'page.dashboard' },
-        component: () => import('@/pages/HomePage.vue')
-      },
-      {
-        path: 'components/guide',
-        name: 'components-guide',
-        meta: { title: 'page.components.guide' },
-        component: () => import('@/pages/ComponentsGuidePage.vue')
-      },
-      {
-        path: 'components',
-        name: 'components',
-        meta: { title: 'page.components.guide' },
-        component: () => import('@/pages/ComponentsGuidePage.vue')
-      },
-      {
-        path: 'components/buttons',
-        name: 'components-buttons',
-        meta: { title: 'page.components.buttons' },
-        component: () => import('@/pages/ComponentsButtonsPage.vue')
-      },
-      {
-        path: 'components/forms',
-        name: 'components-forms',
-        meta: { title: 'page.components.forms' },
-        component: () => import('@/pages/ComponentsFormsPage.vue')
-      },
-      {
-        path: 'components/data',
-        name: 'components-data',
-        meta: { title: 'page.components.data' },
-        component: () => import('@/pages/ComponentsDataPage.vue')
-      },
-      {
-        path: 'components/modal',
-        name: 'components-modal',
-        meta: { title: 'page.components.modal' },
-        component: () => import('@/pages/ComponentsModalPage.vue')
-      },
-      {
-        path: 'components/feedback',
-        name: 'components-feedback',
-        meta: { title: 'page.components.feedback' },
-        component: () => import('@/pages/ComponentsFeedbackPage.vue')
-      },
-      {
-        path: 'tools',
-        name: 'tools',
-        meta: { title: 'page.tools.guide' },
-        component: () => import('@/pages/ToolsGuidePage.vue')
-      },
-      {
-        path: 'tools/files',
-        name: 'tools-files',
-        meta: { title: 'page.files' },
-        component: () => import('@/pages/FilePage.vue')
-      },
-      {
-        path: 'tools/format',
-        name: 'tools-format',
-        meta: { title: 'page.format' },
-        component: () => import('@/pages/FormatPage.vue')
-      },
-      {
-        path: 'tools/validation',
-        name: 'tools-validation',
-        meta: { title: 'page.validation' },
-        component: () => import('@/pages/ValidationPage.vue')
-      },
-      {
         path: 'test-data/input',
         name: 'test-data-input',
         meta: { title: 'Test Data Input' },
         component: () => import('@/pages/TestDataInputPage.vue')
-      },
-      {
-        path: 'examples',
-        name: 'examples',
-        meta: { title: 'page.examples.guide' },
-        component: () => import('@/pages/ExamplesGuidePage.vue')
-      },
-      {
-        path: 'examples/form',
-        name: 'examples-form',
-        meta: { title: 'page.form' },
-        component: () => import('@/pages/FormPage.vue')
-      },
-      {
-        path: 'examples/store',
-        name: 'examples-store',
-        meta: { title: 'page.store' },
-        component: () => import('@/pages/StorePage.vue')
-      },
-      {
-        path: 'about',
-        name: 'about',
-        meta: { title: 'page.about' },
-        component: () => import('@/pages/AboutPage.vue')
       }
     ]
   },
