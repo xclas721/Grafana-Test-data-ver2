@@ -15,6 +15,7 @@ const props = defineProps<{
   scheduleRunning: boolean
   nextRunInSeconds: number
   posting: boolean
+  nodePosting: boolean
   isWeightValid: boolean
 }>()
 
@@ -31,6 +32,7 @@ const emit = defineEmits<{
   previewBatch: []
   postSingle: []
   postBatch: []
+  postBatchNode: []
   startSchedule: []
   stopSchedule: []
 }>()
@@ -226,6 +228,18 @@ const batchCountForTip = computed(() => Math.max(1, Number.parseInt(props.batchS
             <span class="test-data-post-action__badge">{{
               t('testData.actions.post.batch.tip', { count: batchCountForTip })
             }}</span>
+          </div>
+          <div class="test-data-post-action">
+            <Button
+              variant="outline"
+              size="sm"
+              :disabled="nodePosting || !isWeightValid"
+              title="透過 Node.js 後端插入，並發 20 連線，速度更快（需先執行 npm run server）"
+              @click="emit('postBatchNode')"
+            >
+              {{ nodePosting ? 'Node 插入中...' : 'Node 批量插入' }}
+            </Button>
+            <span class="test-data-post-action__badge">並發 20x · 免 CORS</span>
           </div>
         </div>
         <p v-if="!isWeightValid" class="text-xs text-warning mt-2">

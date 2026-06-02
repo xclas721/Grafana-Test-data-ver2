@@ -19,6 +19,7 @@ import BulkProgressPanel from '@/features/test-data/components/BulkProgressPanel
 import { useElasticsearchInsert } from '@/features/test-data/useElasticsearchInsert'
 import { useScheduledBatchInsert } from '@/features/test-data/useScheduledBatchInsert'
 import { useTestDataForm } from '@/features/test-data/useTestDataForm'
+import { useNodeBackendInsert } from '@/features/test-data/useNodeBackendInsert'
 
 const { t } = useI18n()
 
@@ -59,6 +60,14 @@ const {
 } = useTestDataForm()
 
 const currencyModalVisible = ref(false)
+
+const { posting: nodePosting, progress: nodeProgress, batchInsertViaNode, closeProgress: closeNodeProgress } = useNodeBackendInsert({
+  form,
+  getFormData,
+  generateRandomFields,
+  refreshAutoTimeRange,
+  setStatus
+})
 
 const { posting, progress, insertOne, batchInsert, closeProgress } = useElasticsearchInsert({
   form,
@@ -117,6 +126,7 @@ function onWriteModeChange(mode: 'manual' | 'scheduled') {
       :schedule-running="scheduleRunning"
       :next-run-in-seconds="nextRunInSeconds"
       :posting="posting"
+      :node-posting="nodePosting"
       :is-weight-valid="isWeightValid"
       @update:form-mode="form.mode = $event as 'acs' | 'dss'"
       @update:current-date="form.currentDate = $event"
@@ -130,6 +140,7 @@ function onWriteModeChange(mode: 'manual' | 'scheduled') {
       @preview-batch="generateBatchPreview"
       @post-single="insertOne"
       @post-batch="batchInsert"
+      @post-batch-node="batchInsertViaNode"
       @start-schedule="startSchedule"
       @stop-schedule="stopSchedule"
     />
@@ -358,6 +369,21 @@ function onWriteModeChange(mode: 'manual' | 'scheduled') {
       :logs="progress.logs"
       :errors="progress.errors"
       @close="closeProgress"
+    />
+
+    <BulkProgressPanel
+      :visible="nodeProgress.visible"
+      :finished="nodeProgress.finished"
+      :phase-label="nodeProgress.phaseLabel"
+      :summary="nodeProgress.summary"
+      :current="nodeProgress.current"
+      :total="nodeProgress.total"
+      :success="nodeProgress.success"
+      :error="nodeProgress.error"
+      :elapsed-sec="nodeProgress.elapsedSec"
+      :logs="nodeProgress.logs"
+      :errors="nodeProgress.errors"
+      @close="closeNodeProgress"
     />
   </div>
 </template>

@@ -71,6 +71,11 @@ export default defineConfig(({ mode }) => {
         '/acs-auth': {
           target: env.VITE_ACS_AUTH_PROXY ?? 'http://localhost:30100',
           changeOrigin: true
+        },
+        '/node-server': {
+          target: env.VITE_NODE_SERVER_URL ?? 'http://localhost:3001',
+          changeOrigin: true,
+          rewrite: (p) => p.replace(/^\/node-server/, '')
         }
       }
     },
