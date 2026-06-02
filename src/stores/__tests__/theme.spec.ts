@@ -22,12 +22,12 @@ describe('theme store', () => {
   describe('setTheme', () => {
     it('合法主題應寫入 storage 與 data-theme', async () => {
       const s = useThemeStore()
-      s.setTheme('dark')
+      s.setTheme('brainwave-dark')
       await nextTick()
-      expect(unref(s.currentTheme as unknown as Ref<string>)).toBe('dark')
-      expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
+      expect(unref(s.currentTheme as unknown as Ref<string>)).toBe('brainwave-dark')
+      expect(document.documentElement.getAttribute('data-theme')).toBe('brainwave-dark')
       const raw = localStorage.getItem('theme')
-      expect(raw === 'dark' || raw === JSON.stringify('dark')).toBe(true)
+      expect(raw === 'brainwave-dark' || raw === JSON.stringify('brainwave-dark')).toBe(true)
     })
 
     it('不在清單內的主題應忽略', async () => {
@@ -59,7 +59,16 @@ describe('theme store', () => {
       expect(unref(s.currentTheme as unknown as Ref<string>)).toBe('brainwave-dark')
       s.nextTheme()
       await nextTick()
-      expect(unref(s.currentTheme as unknown as Ref<string>)).toBe('light')
+      expect(unref(s.currentTheme as unknown as Ref<string>)).toBe('brainwave')
+    })
+
+    it('storage 為已移除主題時 initTheme 應回退 brainwave', async () => {
+      localStorage.setItem('theme', 'dark')
+      const s = useThemeStore()
+      s.initTheme()
+      await nextTick()
+      expect(unref(s.currentTheme as unknown as Ref<string>)).toBe('brainwave')
+      expect(document.documentElement.getAttribute('data-theme')).toBe('brainwave')
     })
   })
 })

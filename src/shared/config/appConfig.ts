@@ -25,7 +25,7 @@ export const appConfig: PublicConfig = {
     runtime.API_BASE_URL ?? import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080',
   FRONTEND_CONTEXT_PATH:
     runtime.FRONTEND_CONTEXT_PATH ?? import.meta.env.VITE_FRONTEND_CONTEXT_PATH ?? '/',
-  FRONTEND_PORT: runtime.FRONTEND_PORT ?? import.meta.env.VITE_FRONTEND_PORT ?? '3000',
+  FRONTEND_PORT: runtime.FRONTEND_PORT ?? import.meta.env.VITE_FRONTEND_PORT ?? '6600',
   BACKEND_API_TIMEOUT: Number(
     runtime.BACKEND_API_TIMEOUT ?? import.meta.env.VITE_BACKEND_API_TIMEOUT ?? 60000
   ),

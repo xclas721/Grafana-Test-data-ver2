@@ -17,6 +17,7 @@ const emit = defineEmits<{
   'update:usdAmount': [value: string]
   'update:enablePurchaseAmountRandom': [value: boolean]
   'update:enablePurchaseCurrencyRandom': [value: boolean]
+  openCurrencyPicker: []
 }>()
 
 const purchaseCurrencyOptions: SelectOption[] = [
@@ -84,7 +85,16 @@ const purchaseCurrencyOptions: SelectOption[] = [
             required
             @update:model-value="(value) => emit('update:purchaseCurrency', String(value))"
           />
-          <p class="text-xs text-base-content/60 mt-1">選擇貨幣類型</p>
+          <div class="flex flex-wrap items-center gap-2 mt-1">
+            <p class="text-xs text-base-content/60">選擇貨幣類型</p>
+            <button
+              type="button"
+              class="btn btn-outline btn-xs"
+              @click="emit('openCurrencyPicker')"
+            >
+              選擇貨幣…
+            </button>
+          </div>
           <div class="flex items-center gap-2 mt-2">
             <input
               type="checkbox"

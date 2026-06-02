@@ -30,6 +30,9 @@ export function buildTestDataDocument(
   const sharedAreqMs = Number(form.execTime || Math.floor(Math.random() * 701 + 800))
   const cardSchemeKey = String(form.cardScheme || 'V').trim() || 'V'
   const nowIso = sharedTimestamp ?? new Date().toISOString()
+  const randomDaysAgo = Math.floor(Math.random() * 365)
+  const historicalDate = new Date(Date.now() - randomDaysAgo * 24 * 60 * 60 * 1000)
+  const historicalDateStr = historicalDate.toISOString().split('T')[0] ?? ''
   const utcDateStr = nowIso.split('T')[0] ?? ''
   const fullIndex = `${indexBase}-${utcDateStr}`
 
@@ -148,8 +151,8 @@ export function buildTestDataDocument(
   }
   doc.exchangeKey = `${form.currencyCodeForRate || form.currencyAlphabeticCode || 'CNY'}-${nowIso.split('T')[0]}`
   doc.exchange_rate = {
-    date: `${nowIso.split('T')[0]}T00:00:00.000Z`,
-    '@timestamp': `${nowIso.split('T')[0]}T00:00:02.000Z`,
+    date: `${historicalDateStr}T00:00:00.000Z`,
+    '@timestamp': `${historicalDateStr}T00:00:02.000Z`,
     rate: form.exchangeRate,
     target: form.exchangeTarget,
     base: form.exchangeBase
@@ -163,12 +166,21 @@ export function buildTestDataDocument(
     doc.visaScoreMessageExtension = null
   }
   if (form.enableMastercardExtension === 'on') {
-    doc.mastercardMessageExtension = {
-      score: Number.parseInt(form.mastercardScore || '600', 10),
-      reasonCode2: form.mastercardReasonCode2 || '',
-      reasonCode1: form.mastercardReasonCode1 || 'A',
-      decision: form.mastercardDecision || 'Not Low Risk',
-      status: form.mastercardStatus || 'success'
+    const mcRaw = form.mastercardMessageExtension?.trim()
+    if (mcRaw?.startsWith('{')) {
+      try {
+        doc.mastercardMessageExtension = JSON.parse(mcRaw) as Record<string, unknown>
+      } catch {
+        doc.mastercardMessageExtension = null
+      }
+    } else {
+      doc.mastercardMessageExtension = {
+        score: Number.parseInt(form.mastercardScore || '600', 10),
+        reasonCode2: form.mastercardReasonCode2 || '',
+        reasonCode1: form.mastercardReasonCode1 || 'A',
+        decision: form.mastercardDecision || 'Not Low Risk',
+        status: form.mastercardStatus || 'success'
+      }
     }
   } else {
     doc.mastercardMessageExtension = null

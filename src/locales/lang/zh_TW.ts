@@ -305,14 +305,6 @@ const zh_TW = {
   'theme.select': '選擇主題',
   'theme.brainwave': 'Brainwave (自訂)',
   'theme.brainwave-dark': 'Brainwave (自訂-深色)',
-  'theme.light': '淺色',
-  'theme.dark': '深色',
-  'theme.night': '夜晚',
-  'theme.cmyk': 'CMYK',
-  'theme.business': '商務',
-  'theme.sunset': '日落',
-  'theme.abyss': '深淵',
-  'theme.silk': '絲綢',
 
   // ===== 時區選擇 =====
   'timezone.select': '選擇時區',

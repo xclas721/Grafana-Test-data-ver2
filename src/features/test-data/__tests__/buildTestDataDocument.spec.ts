@@ -37,6 +37,10 @@ describe('buildTestDataDocument', () => {
     expect(document.ares_transStatus).toBe('Y')
     expect(document.acsTransID).toBe('acs-id')
     expect(Array.isArray(document.performance_metrics)).toBe(true)
+    expect(document.exchange_rate).toMatchObject({
+      date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T00:00:00\.000Z$/),
+      '@timestamp': expect.stringMatching(/^\d{4}-\d{2}-\d{2}T00:00:02\.000Z$/)
+    })
   })
 
   it('sharedTimestamp 覆寫時間戳與索引日期', () => {

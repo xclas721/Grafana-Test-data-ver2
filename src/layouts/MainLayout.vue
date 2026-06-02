@@ -9,27 +9,22 @@
         {{ t('a11y.skipToContent') }}
       </a>
       <!-- Header -->
-      <div
-        class="navbar bg-base-100/80 backdrop-blur-md border-b border-base-200 px-3 md:px-4 h-16 min-h-[4rem] sticky top-0 z-30"
-      >
-        <!-- Mobile Drawer Toggle -->
-        <label for="my-drawer-2" class="btn btn-square btn-ghost btn-sm lg:hidden mr-2">
-          <Menu class="inline-block w-6 h-6" />
-        </label>
-
-        <!-- Breadcrumb (Left) -->
-        <div class="flex-1 flex items-center overflow-hidden">
-          <Breadcrumb :home-path="'/test-data/input'" class="!mb-0" />
-        </div>
-
-        <!-- Actions (Right) -->
-        <div class="flex-none flex items-center gap-1 sm:gap-2">
-          <TopbarControls :current-time="currentTime" />
-
-          <div
-            class="ml-1 sm:ml-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold"
-          >
-            Test Data Mode
+      <div class="header-bar sticky top-0 z-30">
+        <div class="header-bar-inner border-b border-base-200 px-4">
+          <label for="my-drawer-2" class="header-toggler btn btn-square btn-ghost btn-sm lg:hidden">
+            <Menu class="inline-block w-6 h-6" />
+          </label>
+          <div class="header-breadcrumb">
+            <Breadcrumb
+              :home-path="'/'"
+              :path-label-map="{
+                '/test-data': 'Test Data',
+                '/test-data/input': 'Test Data Input'
+              }"
+            />
+          </div>
+          <div class="header-actions-wrapper ms-auto">
+            <TopbarControls :current-time="currentTime" />
           </div>
         </div>
       </div>
@@ -135,3 +130,62 @@ onUnmounted(() => {
   document.body.style.overflow = ''
 })
 </script>
+
+<style scoped>
+.header-bar {
+  background: color-mix(in srgb, var(--color-base-100) 88%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.header-bar-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  min-height: 59px;
+  gap: 0.5rem;
+}
+
+.header-breadcrumb {
+  flex: 1;
+  min-width: 0;
+}
+
+.header-actions-wrapper {
+  min-width: 0;
+}
+
+.header-toggler {
+  margin-inline-start: -8px;
+}
+
+@media (max-width: 991.98px) {
+  .header-bar-inner {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'toggler actions'
+      'breadcrumb breadcrumb';
+    align-items: center;
+    min-height: auto;
+    row-gap: 0.375rem;
+    column-gap: 0.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .header-toggler {
+    grid-area: toggler;
+    margin-inline-start: -4px;
+  }
+
+  .header-breadcrumb {
+    grid-area: breadcrumb;
+    width: 100%;
+  }
+
+  .header-actions-wrapper {
+    grid-area: actions;
+    margin-left: auto;
+  }
+}
+</style>

@@ -12,11 +12,6 @@ export interface TimezoneOption {
   value: string
 }
 
-interface TimezoneMeta {
-  value: string
-  name: string
-}
-
 const supportLocale: LocaleOption[] = [
   { label: '繁體中文', value: 'zh-TW', backendValue: 'zh_TW' },
   { label: '简体中文', value: 'zh-CN', backendValue: 'zh_CN' },
@@ -65,41 +60,62 @@ export function getLocaleLabel(localeValue: string): string {
   return returnLocale ? returnLocale.label : 'English'
 }
 
-/**
- * 必要常用時區清單（含會受 DST 影響地區）
- */
-const essentialTimezones: TimezoneMeta[] = [
-  { value: 'Asia/Taipei', name: 'Taipei' },
-  { value: 'Asia/Tokyo', name: 'Tokyo' },
-  { value: 'Asia/Singapore', name: 'Singapore' },
-  { value: 'Europe/London', name: 'London' },
-  { value: 'Europe/Berlin', name: 'Berlin' },
-  { value: 'America/New_York', name: 'New York' },
-  { value: 'America/Los_Angeles', name: 'Los Angeles' },
-  { value: 'Australia/Sydney', name: 'Sydney' }
-]
+const zoneValues = [
+  'Pacific/Pago_Pago',
+  'Pacific/Honolulu',
+  'Pacific/Gambier',
+  'America/Anchorage',
+  'America/Los_Angeles',
+  'America/Denver',
+  'America/Chicago',
+  'America/New_York',
+  'America/Halifax',
+  'America/Sao_Paulo',
+  'America/Noronha',
+  'Atlantic/Cape_Verde',
+  'UTC',
+  'Europe/London',
+  'Europe/Paris',
+  'Europe/Rome',
+  'Africa/Johannesburg',
+  'Europe/Moscow',
+  'Asia/Dubai',
+  'Asia/Karachi',
+  'Asia/Dhaka',
+  'Asia/Bangkok',
+  'Asia/Ho_Chi_Minh',
+  'Asia/Phnom_Penh',
+  'Asia/Jakarta',
+  'Asia/Taipei',
+  'Asia/Singapore',
+  'Asia/Hong_Kong',
+  'Asia/Shanghai',
+  'Asia/Tokyo',
+  'Asia/Seoul',
+  'Australia/Brisbane',
+  'Australia/Sydney',
+  'Pacific/Noumea',
+  'Pacific/Tarawa',
+  'Pacific/Auckland',
+  'Pacific/Apia',
+  'Pacific/Kiritimati'
+] as const
 
-function formatUtcOffset(timezone: string): string {
-  const now = DateTime.now().setZone(timezone)
-  if (!now.isValid) {
-    return '+00:00'
-  }
-  // Luxon 會依當下日期自動套用 DST，offset 會動態變化
-  return now.toFormat('ZZ')
+const essentialTimezones: string[] = [...zoneValues]
+
+const formatOffset = (offsetMinutes: number): string => {
+  const sign = offsetMinutes >= 0 ? '+' : '-'
+  const absMinutes = Math.abs(offsetMinutes)
+  const hours = Math.floor(absMinutes / 60)
+  const minutes = absMinutes % 60
+  return minutes === 0
+    ? `UTC${sign}${hours}`
+    : `UTC${sign}${hours}:${minutes.toString().padStart(2, '0')}`
 }
 
-function toTimezoneOption(meta: TimezoneMeta): TimezoneOption {
-  const offset = formatUtcOffset(meta.value)
-  return {
-    value: meta.value,
-    label: `${meta.name} UTC${offset}`
-  }
-}
-
-function getShortTimezoneName(timezone: string): string {
-  const parts = timezone.split('/')
-  const raw = parts[parts.length - 1] || timezone
-  return raw.replace(/_/g, ' ')
+export function formatTimezoneLabel(value: string): string {
+  const offsetMinutes = DateTime.now().setZone(value).offset
+  return `${formatOffset(offsetMinutes)} | ${value}`
 }
 
 function isValidTimezone(timezone: string): boolean {
@@ -116,27 +132,15 @@ export function getBrowserTimeZone(): string {
 }
 
 export function getTimezoneList(currentTimezone?: string): TimezoneOption[] {
-  const browserTimezone = getBrowserTimeZone()
-  const browserShortName = getShortTimezoneName(browserTimezone)
-  const browserOption: TimezoneOption = {
-    value: browserTimezone,
-    label: `${browserShortName} UTC${formatUtcOffset(browserTimezone)} (Auto)`
-  }
-  const base = essentialTimezones.map(toTimezoneOption)
+  const list = essentialTimezones.map((item) => ({
+    value: item,
+    label: formatTimezoneLabel(item)
+  }))
+
   const selected = currentTimezone?.trim()
-  const options: TimezoneOption[] = [browserOption]
-
-  if (!selected || !isValidTimezone(selected)) {
-    return [...options, ...base.filter((item) => item.value !== browserTimezone)]
+  if (selected && isValidTimezone(selected) && !list.some((item) => item.value === selected)) {
+    list.unshift({ value: selected, label: formatTimezoneLabel(selected) })
   }
 
-  if (!base.some((item) => item.value === selected) && selected !== browserTimezone) {
-    const selectedShortName = getShortTimezoneName(selected)
-    options.push({
-      value: selected,
-      label: `Custom TZ: ${selectedShortName} UTC${formatUtcOffset(selected)}`
-    })
-  }
-
-  return [...options, ...base.filter((item) => item.value !== browserTimezone)]
+  return list
 }

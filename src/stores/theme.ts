@@ -2,19 +2,12 @@ import { defineStore } from 'pinia'
 import { useStorage } from '@vueuse/core'
 
 export const useThemeStore = defineStore('theme', () => {
-  // 可用的主題列表（精選）
-  const availableThemes = [
-    'brainwave', // 自訂主題
-    'brainwave-dark', // 自訂主題 (深色)
-    'light', // 淺色
-    'dark', // 深色
-    'night', // 夜晚
-    'cmyk', // CMYK
-    'business', // 商務
-    'sunset', // 日落
-    'abyss', // 深淵
-    'silk' // 絲綢
-  ]
+  const availableThemes = ['brainwave', 'brainwave-dark'] as const
+  type AppTheme = (typeof availableThemes)[number]
+
+  function isAppTheme(theme: string): theme is AppTheme {
+    return (availableThemes as readonly string[]).includes(theme)
+  }
 
   // 當前主題（使用 localStorage 持久化）
   const currentTheme = useStorage('theme', 'brainwave')
@@ -23,7 +16,7 @@ export const useThemeStore = defineStore('theme', () => {
    * 設定主題
    */
   function setTheme(theme: string) {
-    if (availableThemes.includes(theme)) {
+    if (isAppTheme(theme)) {
       currentTheme.value = theme
       // 更新 HTML 的 data-theme 屬性
       document.documentElement.setAttribute('data-theme', theme)
@@ -34,7 +27,9 @@ export const useThemeStore = defineStore('theme', () => {
    * 初始化主題（在應用啟動時調用）
    */
   function initTheme() {
-    const theme = currentTheme.value || 'brainwave'
+    const stored = currentTheme.value || 'brainwave'
+    const theme = isAppTheme(stored) ? stored : 'brainwave'
+    if (theme !== stored) currentTheme.value = theme
     setTheme(theme)
   }
 
@@ -43,7 +38,7 @@ export const useThemeStore = defineStore('theme', () => {
    */
   function nextTheme() {
     const current = currentTheme.value || 'brainwave'
-    const currentIndex = availableThemes.indexOf(current)
+    const currentIndex = isAppTheme(current) ? availableThemes.indexOf(current) : -1
     const nextIndex = (currentIndex + 1) % availableThemes.length
     setTheme(availableThemes[nextIndex] || 'brainwave')
   }

@@ -54,7 +54,7 @@ export default defineConfig(({ mode }) => {
       })
     ].filter(Boolean),
     server: {
-      port: Number(env.VITE_FRONTEND_PORT) || 3000,
+      port: Number(env.VITE_FRONTEND_PORT) || 6600,
       host,
       https: httpsConfig,
       proxy: {
@@ -65,6 +65,10 @@ export default defineConfig(({ mode }) => {
           rewrite: (pathValue) => pathValue.replace(new RegExp(`^${proxyApi}`), '/api')
         }
       }
+    },
+    preview: {
+      port: Number(env.VITE_FRONTEND_PORT) || 6600,
+      host
     },
     resolve: {
       alias: {

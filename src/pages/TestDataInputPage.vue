@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { Button, Input, PageHeader, Select, type SelectOption } from '@/shared/components'
+import CurrencyModal from '@/features/test-data/components/CurrencyModal.vue'
 import BaseConfigSection from '@/features/test-data/sections/BaseConfigSection.vue'
 import TransactionIdSection from '@/features/test-data/sections/TransactionIdSection.vue'
 import TransactionStatusSection from '@/features/test-data/sections/TransactionStatusSection.vue'
@@ -48,8 +50,11 @@ const {
   generateBatchPreview,
   getFormData,
   setStatus,
-  refreshAutoTimeRange
+  refreshAutoTimeRange,
+  onCurrencySelect
 } = useTestDataForm()
+
+const currencyModalVisible = ref(false)
 
 const { posting, progress, insertOne, batchInsert, closeProgress } = useElasticsearchInsert({
   form,
@@ -96,59 +101,136 @@ const {
     </div>
 
     <div
-      class="sticky top-16 z-10 mb-6 flex flex-wrap items-end gap-3 rounded-lg border border-base-300 bg-base-100/95 backdrop-blur px-4 py-3 shadow-sm"
+      class="sticky top-16 z-10 mb-6 rounded-lg border border-base-300 bg-base-100/95 backdrop-blur shadow-sm"
     >
-      <Select v-model="form.mode" label="產品模式" :options="modeOptions" class="min-w-[120px]" />
-      <Input v-model="form.currentDate" type="date" label="基準日期" class="w-36" />
-      <Input v-model="form.batchSize" label="批次筆數" class="w-28" />
-      <Input
-        v-model="form.batchDays"
-        label="生成天數"
-        class="w-28"
-        :disabled="!form.enableAutoTimeRange || scheduleEnabled"
-      />
-      <Button variant="outline" @click="loadDefaults">載入預設值</Button>
-      <Button variant="primary" :disabled="!isWeightValid" @click="generateRandomFields">
-        隨機生成欄位
-      </Button>
-      <Button variant="primary" @click="generateOne">輸出單筆文件</Button>
-      <Button variant="info" @click="generateBatchPreview">生成批次預覽</Button>
-      <Button variant="primary" :disabled="posting" @click="insertOne">插入單筆到 ES</Button>
-      <Button variant="primary" :disabled="posting || !isWeightValid" @click="batchInsert">
-        批量生成並 POST
-      </Button>
-      <label class="flex items-center gap-1.5 text-xs pb-2 cursor-pointer">
-        <input
-          type="checkbox"
-          class="checkbox checkbox-sm"
-          :checked="scheduleEnabled"
-          @change="onToggleScheduleEnabled(($event.target as HTMLInputElement).checked)"
-        />
-        自動 POST
-      </label>
-      <Input
-        :model-value="String(scheduleIntervalSeconds)"
-        type="number"
-        label="間隔(秒)"
-        class="w-24"
-        :disabled="!scheduleEnabled"
-        @update:model-value="
-          (v) => onUpdateScheduleIntervalSeconds(Math.max(1, Number.parseInt(String(v), 10) || 1))
-        "
-      />
-      <Button
-        :variant="scheduleRunning ? 'outline' : 'info'"
-        :disabled="!scheduleEnabled || posting"
-        @click="scheduleRunning ? stopSchedule() : startSchedule()"
-      >
-        {{ scheduleRunning ? '停止自動' : '開始自動' }}
-      </Button>
-      <span v-if="scheduleRunning" class="text-xs text-base-content/60 pb-2">
-        下一次：{{ nextRunInSeconds }} 秒
-      </span>
-      <span v-if="!isWeightValid" class="text-xs text-warning pb-2">
-        ARes/RReq 權重需各為 100% 才能隨機生成
-      </span>
+      <div class="px-4 py-3 border-b border-base-300/80">
+        <div class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between xl:gap-6">
+          <div class="min-w-0 flex-1">
+            <div class="text-xs font-medium text-base-content/50 mb-2">批次參數</div>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4 sm:gap-x-3 lg:max-w-3xl">
+              <Select
+                v-model="form.mode"
+                label="產品模式"
+                :options="modeOptions"
+                class="col-span-2 sm:col-span-1"
+              />
+              <Input v-model="form.currentDate" type="date" label="基準日期" />
+              <Input v-model="form.batchSize" type="number" label="批次筆數" />
+              <Input
+                v-model="form.batchDays"
+                type="number"
+                label="生成天數"
+                :disabled="!form.enableAutoTimeRange || scheduleEnabled"
+                :title="
+                  scheduleEnabled
+                    ? '自動 POST 時固定為當前時間（天數 0）'
+                    : !form.enableAutoTimeRange
+                      ? '手動時間區間時不使用天數'
+                      : '往回生成多少天的資料'
+                "
+              />
+            </div>
+          </div>
+
+          <div
+            class="shrink-0 rounded-md border border-base-300/80 bg-base-200/40 px-3 py-2.5 xl:min-w-[320px]"
+          >
+            <div class="text-xs font-medium text-base-content/50 mb-2">自動 POST</div>
+            <div class="flex flex-wrap items-end gap-x-3 gap-y-2">
+              <label class="flex h-10 cursor-pointer items-center gap-2 rounded-md px-1 text-sm">
+                <input
+                  type="checkbox"
+                  class="checkbox checkbox-sm checkbox-primary"
+                  :checked="scheduleEnabled"
+                  @change="onToggleScheduleEnabled(($event.target as HTMLInputElement).checked)"
+                />
+                <span>啟用</span>
+              </label>
+              <Input
+                :model-value="String(scheduleIntervalSeconds)"
+                type="number"
+                label="間隔(秒)"
+                class="w-[5.5rem]"
+                :disabled="!scheduleEnabled"
+                @update:model-value="
+                  (v) =>
+                    onUpdateScheduleIntervalSeconds(
+                      Math.max(1, Number.parseInt(String(v), 10) || 1)
+                    )
+                "
+              />
+              <Button
+                size="sm"
+                :variant="scheduleRunning ? 'outline' : 'info'"
+                :disabled="!scheduleEnabled || posting"
+                class="h-10"
+                @click="scheduleRunning ? stopSchedule() : startSchedule()"
+              >
+                {{ scheduleRunning ? '停止' : '開始' }}
+              </Button>
+              <span
+                v-if="scheduleRunning"
+                class="pb-2 text-xs tabular-nums text-base-content/70 whitespace-nowrap"
+              >
+                下次 {{ nextRunInSeconds }} 秒
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 px-4 py-3">
+        <Button variant="outline" size="sm" @click="loadDefaults">載入預設值</Button>
+        <Button
+          variant="primary"
+          size="sm"
+          :disabled="!isWeightValid"
+          @click="generateRandomFields"
+        >
+          隨機生成欄位
+        </Button>
+        <Button variant="primary" size="sm" @click="generateOne">輸出單筆</Button>
+        <Button variant="info" size="sm" @click="generateBatchPreview">批次預覽</Button>
+        <div class="mx-1 hidden h-6 w-px bg-base-300 sm:block" aria-hidden="true" />
+        <Button variant="primary" size="sm" :disabled="posting" @click="insertOne">
+          插入單筆到 ES
+        </Button>
+        <Button
+          variant="primary"
+          size="sm"
+          :disabled="posting || !isWeightValid"
+          @click="batchInsert"
+        >
+          批量生成並 POST
+        </Button>
+        <span v-if="!isWeightValid" class="w-full text-xs text-warning sm:w-auto sm:ml-1">
+          ARes／RReq 權重需各為 100% 才能隨機生成與批量 POST
+        </span>
+      </div>
+    </div>
+
+    <div class="mb-6 grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div class="card bg-base-100 border border-base-200 shadow-sm">
+        <div class="card-body">
+          <h3 class="font-semibold text-base">單筆文件 JSON</h3>
+          <pre
+            class="mt-2 text-xs bg-base-200 p-3 rounded overflow-auto max-h-[480px] whitespace-pre-wrap"
+            >{{ outputJson || '（按「輸出單筆文件」產生）' }}</pre
+          >
+        </div>
+      </div>
+      <div class="card bg-base-100 border border-base-200 shadow-sm">
+        <div class="card-body">
+          <h3 class="font-semibold text-base">批次預覽 JSON</h3>
+          <p class="text-xs text-base-content/60 mt-1">
+            若勾選「批次插入時依比例隨機混入錯誤」，預覽會依比例套用 EMV 錯誤預設。
+          </p>
+          <pre
+            class="mt-2 text-xs bg-base-200 p-3 rounded overflow-auto max-h-[480px] whitespace-pre-wrap"
+            >{{ batchPreviewJson || '（按「生成批次預覽」產生）' }}</pre
+          >
+        </div>
+      </div>
     </div>
 
     <form class="space-y-6" @submit.prevent>
@@ -230,6 +312,7 @@ const {
         v-model:usd-amount="form.usdAmount"
         v-model:enable-purchase-amount-random="form.enablePurchaseAmountRandom"
         v-model:enable-purchase-currency-random="form.enablePurchaseCurrencyRandom"
+        @open-currency-picker="currencyModalVisible = true"
       />
 
       <CountryCurrencySection
@@ -333,30 +416,6 @@ const {
       />
     </form>
 
-    <div class="mt-6 grid grid-cols-1 xl:grid-cols-2 gap-6">
-      <div class="card bg-base-100 border border-base-200 shadow-sm">
-        <div class="card-body">
-          <h3 class="font-semibold text-base">單筆文件 JSON</h3>
-          <pre
-            class="mt-2 text-xs bg-base-200 p-3 rounded overflow-auto max-h-[480px] whitespace-pre-wrap"
-            >{{ outputJson || '（按「輸出單筆文件」產生）' }}</pre
-          >
-        </div>
-      </div>
-      <div class="card bg-base-100 border border-base-200 shadow-sm">
-        <div class="card-body">
-          <h3 class="font-semibold text-base">批次預覽 JSON</h3>
-          <p class="text-xs text-base-content/60 mt-1">
-            若勾選「批次插入時依比例隨機混入錯誤」，預覽會依比例套用 EMV 錯誤預設。
-          </p>
-          <pre
-            class="mt-2 text-xs bg-base-200 p-3 rounded overflow-auto max-h-[480px] whitespace-pre-wrap"
-            >{{ batchPreviewJson || '（按「生成批次預覽」產生）' }}</pre
-          >
-        </div>
-      </div>
-    </div>
-
     <BulkProgressPanel
       :visible="progress.visible"
       :status-text="progress.statusText"
@@ -369,6 +428,7 @@ const {
       :errors="progress.errors"
       @close="closeProgress"
     />
+    <CurrencyModal v-model="currencyModalVisible" @select="onCurrencySelect" />
   </div>
 </template>
 

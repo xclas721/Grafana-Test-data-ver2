@@ -26,35 +26,25 @@ import {
   updateCustomTimeRangeFromNow,
   type TimeRangeFormSlice
 } from '@/features/test-data/testDataTimeRange'
+import {
+  applyCurrencySelection,
+  type CurrencySelectPayload
+} from '@/features/test-data/currencySelection'
+import {
+  ACQUIRER_BIN_OPTIONS,
+  COUNTRY_NUMERIC_MAP,
+  CURRENCY_NUMERIC_MAP,
+  MERCHANT_COUNTRY_CODE_ASIA_VALUES,
+  MERCHANT_COUNTRY_CODE_STR_VALUES,
+  MERCHANT_MCC_OPTIONS
+} from '@/features/test-data/testDataMaps'
 
-export const COUNTRY_NUMERIC_MAP = {
-  '156': { alpha2: 'CN', alpha3: 'CHN', name: 'China' },
-  '158': { alpha2: 'TW', alpha3: 'TWN', name: 'Taiwan' },
-  '344': { alpha2: 'HK', alpha3: 'HKG', name: 'Hong Kong' },
-  '392': { alpha2: 'JP', alpha3: 'JPN', name: 'Japan' },
-  '410': { alpha2: 'KR', alpha3: 'KOR', name: 'South Korea' },
-  '702': { alpha2: 'SG', alpha3: 'SGP', name: 'Singapore' },
-  '840': { alpha2: 'US', alpha3: 'USA', name: 'United States' }
-} as const
-
-export const CURRENCY_NUMERIC_MAP = {
-  '156': { alphabetic: 'CNY', name: 'Yuan Renminbi', minorUnit: '2' },
-  '344': { alphabetic: 'HKD', name: 'Hong Kong Dollar', minorUnit: '2' },
-  '392': { alphabetic: 'JPY', name: 'Yen', minorUnit: '0' },
-  '410': { alphabetic: 'KRW', name: 'Won', minorUnit: '0' },
-  '702': { alphabetic: 'SGD', name: 'Singapore Dollar', minorUnit: '2' },
-  '840': { alphabetic: 'USD', name: 'US Dollar', minorUnit: '2' }
-} as const
-
-export const MERCHANT_MCC_OPTIONS = [
-  { name: 'HiTRUST EMV Demo Merchant', mcc: '5661' },
-  { name: "McDonald's", mcc: '5814' },
-  { name: 'Walmart Supercenter', mcc: '5411' },
-  { name: 'Amazon Marketplace', mcc: '5262' },
-  { name: 'Global Leisure Rewards', mcc: '5816' }
-] as const
-
-export const ACQUIRER_BIN_OPTIONS = ['1231234', '1239999', '9991234', '9999999'] as const
+export {
+  COUNTRY_NUMERIC_MAP,
+  CURRENCY_NUMERIC_MAP,
+  MERCHANT_MCC_OPTIONS,
+  ACQUIRER_BIN_OPTIONS
+} from '@/features/test-data/testDataMaps'
 
 const threeDSParamKeys = [
   'enableMessageCategory',
@@ -274,7 +264,6 @@ export function useTestDataForm() {
 
   function syncCountryFromMerchant(code: string) {
     const info = COUNTRY_NUMERIC_MAP[code as keyof typeof COUNTRY_NUMERIC_MAP]
-    const currency = CURRENCY_NUMERIC_MAP[code as keyof typeof CURRENCY_NUMERIC_MAP]
     if (info) {
       form.countryAlpha2 = info.alpha2
       form.countryNumeric = code
@@ -282,14 +271,23 @@ export function useTestDataForm() {
       form.countryName = info.name
       form.merchantCountryCodeStr = code
     }
-    if (currency) {
-      form.currencyMinorUnit = currency.minorUnit
-      form.currencyName = currency.name
-      form.currencyAlphabeticCode = currency.alphabetic
-      form.currencyNumericCode = code
-      form.exchangeTarget = currency.alphabetic
-      form.currencyCodeForRate = currency.alphabetic
-    }
+  }
+
+  function syncCurrencyFromPurchase(code: string) {
+    const currency = CURRENCY_NUMERIC_MAP[code as keyof typeof CURRENCY_NUMERIC_MAP]
+    if (!currency) return
+    form.purchaseExponent = currency.minorUnit
+    form.currencyMinorUnit = currency.minorUnit
+    form.currencyName = currency.name
+    form.currencyAlphabeticCode = currency.alphabetic
+    form.currencyNumericCode = code
+    form.exchangeTarget = currency.alphabetic
+    form.currencyCodeForRate = currency.alphabetic
+  }
+
+  function onCurrencySelect(payload: CurrencySelectPayload) {
+    applyCurrencySelection(form as unknown as Record<string, unknown>, payload)
+    setStatus(`已選擇 ${payload.country} ${payload.name} (${payload.code})`, 'success')
   }
 
   function refreshTimeRangeDisplay() {
@@ -422,8 +420,8 @@ export function useTestDataForm() {
       enableOtpExecTimeRandom: form.enableOtpExecTimeRandom,
       countryNumericMap: COUNTRY_NUMERIC_MAP,
       currencyNumericMap: CURRENCY_NUMERIC_MAP,
-      merchantCountryAsiaValues: ['156', '392', '344', '410', '702'],
-      merchantCountryValues: Object.keys(COUNTRY_NUMERIC_MAP)
+      merchantCountryAsiaValues: [...MERCHANT_COUNTRY_CODE_ASIA_VALUES],
+      merchantCountryValues: [...MERCHANT_COUNTRY_CODE_STR_VALUES]
     })
     applyUpdates(timingGeoUpdates)
 
@@ -746,6 +744,13 @@ export function useTestDataForm() {
     }
   )
 
+  watch(
+    () => form.purchaseCurrency,
+    (code) => {
+      if (code) syncCurrencyFromPurchase(code)
+    }
+  )
+
   if (!form.acsTransId) {
     form.acsTransId = cryptoRandomUUID()
     form.threeDSServerTransId = cryptoRandomUUID().toLowerCase()
@@ -786,6 +791,7 @@ export function useTestDataForm() {
     getFormData,
     buildDocument,
     setStatus,
-    refreshAutoTimeRange
+    refreshAutoTimeRange,
+    onCurrencySelect
   }
 }

@@ -32,7 +32,7 @@ npm install
 ### 開發
 
 ```bash
-# 啟動開發伺服器（預設 http://localhost:3000）
+# 啟動開發伺服器（預設 http://localhost:6600）
 npm run dev
 
 # 指定 port
@@ -129,7 +129,7 @@ src/
 專案支援以下環境變數（透過 `.env` 檔案設定）：
 
 - `VITE_API_BASE_URL` - 後端 API 基礎 URL（預設: `http://localhost:8080`）
-- `VITE_FRONTEND_PORT` - 前端開發伺服器 port（預設: `3000`）
+- `VITE_FRONTEND_PORT` - 前端開發伺服器 port（預設: `6600`）
 - `VITE_FRONTEND_CONTEXT_PATH` - 前端上下文路徑（預設: `/`）
 - `VITE_BACKEND_API_TIMEOUT` - API 請求超時時間（預設: `60000` ms）
 - `VITE_PAGE_SIZE` - 預設分頁大小（預設: `10`）

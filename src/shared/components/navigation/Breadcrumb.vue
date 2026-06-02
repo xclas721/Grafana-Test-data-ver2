@@ -151,19 +151,53 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
 </script>
 
 <template>
-  <nav v-if="breadcrumbs.length > 1" aria-label="breadcrumb" class="mb-4 px-1">
-    <div class="breadcrumbs text-sm">
-      <ul>
-        <li v-for="item in breadcrumbs" :key="item.path">
-          <RouterLink v-if="!item.isActive && item.isClickable" :to="item.path">
-            {{ item.label }}
-          </RouterLink>
-          <span v-else-if="!item.isActive && !item.isClickable" class="text-base-content/50">
-            {{ item.label }}
-          </span>
-          <span v-else class="font-medium text-primary">{{ item.label }}</span>
-        </li>
-      </ul>
-    </div>
+  <nav v-if="breadcrumbs.length > 0" aria-label="breadcrumb">
+    <ol class="breadcrumb my-0">
+      <li v-for="item in breadcrumbs" :key="item.path" class="breadcrumb-item">
+        <RouterLink v-if="!item.isActive && item.isClickable" :to="item.path">
+          {{ item.label }}
+        </RouterLink>
+        <span v-else>{{ item.label }}</span>
+      </li>
+    </ol>
   </nav>
 </template>
+
+<style scoped>
+.breadcrumb {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  color: color-mix(in srgb, var(--color-base-content) 72%, transparent);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: '/';
+  margin: 0 0.5rem 0 0.25rem;
+  color: color-mix(in srgb, var(--color-base-content) 40%, transparent);
+}
+
+.breadcrumb-item a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+  color: var(--color-primary);
+}
+
+.breadcrumb-item:last-child span {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+</style>

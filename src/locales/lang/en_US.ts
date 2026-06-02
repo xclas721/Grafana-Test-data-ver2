@@ -310,14 +310,6 @@ const en_US = {
   'theme.select': 'Select Theme',
   'theme.brainwave': 'Brainwave (Custom)',
   'theme.brainwave-dark': 'Brainwave (Dark)',
-  'theme.light': 'Light',
-  'theme.dark': 'Dark',
-  'theme.night': 'Night',
-  'theme.cmyk': 'CMYK',
-  'theme.business': 'Business',
-  'theme.sunset': 'Sunset',
-  'theme.abyss': 'Abyss',
-  'theme.silk': 'Silk',
 
   // ===== Timezone Selection =====
   'timezone.select': 'Select Timezone',

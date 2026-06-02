@@ -43,7 +43,7 @@
 }
 
 @plugin "daisyui" {
-  themes: all;
+  themes: brainwave --default, brainwave-dark --prefersdark;
   exclude: properties;
 }
 
