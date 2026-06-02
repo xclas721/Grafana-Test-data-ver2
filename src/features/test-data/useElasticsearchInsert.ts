@@ -14,6 +14,12 @@ import {
   resolveIndexName,
   type TestDataFormMap
 } from '@/features/test-data/buildTestDataDocument'
+import {
+  formatCalendarDay,
+  formatCount,
+  resolveScopeType,
+  type BatchProgressSummary
+} from '@/features/test-data/batchInsertProgress'
 import { generateSharedTimestamp } from '@/features/test-data/testDataTimeRange'
 import type { BulkLogEntry } from '@/features/test-data/components/BulkProgressPanel.vue'
 
@@ -54,7 +60,9 @@ export function useElasticsearchInsert(formApi: TestDataFormApi) {
   const posting = ref(false)
   const progress = reactive({
     visible: false,
-    statusText: '',
+    finished: false,
+    phaseLabel: '',
+    summary: null as BatchProgressSummary | null,
     current: 0,
     total: 0,
     success: 0,
@@ -78,9 +86,15 @@ export function useElasticsearchInsert(formApi: TestDataFormApi) {
     }
   }
 
-  function startProgress(statusText: string, total: number) {
+  function setPhaseLabel(label: string) {
+    progress.phaseLabel = label
+  }
+
+  function startProgress(total: number, summary: BatchProgressSummary) {
     progress.visible = true
-    progress.statusText = statusText
+    progress.finished = false
+    progress.summary = summary
+    progress.phaseLabel = ''
     progress.current = 0
     progress.total = total
     progress.success = 0
@@ -158,8 +172,6 @@ export function useElasticsearchInsert(formApi: TestDataFormApi) {
 
     const total = Math.max(1, Number.parseInt(formApi.form.batchSize, 10) || 1)
     const days = Math.max(0, Number.parseInt(formApi.form.batchDays, 10) || 0)
-    startProgress('正在批量處理...', total)
-    pushLog('info', `開始批量處理，共 ${total} 筆，天數 ${days}${days === 0 ? '（當前時間）' : ''}`)
 
     const errorDetails: string[] = []
     let success = 0
@@ -184,13 +196,21 @@ export function useElasticsearchInsert(formApi: TestDataFormApi) {
         return
       }
 
-      if (isBatchErrorMixEnabled(dataBase)) {
-        const pct = getBatchErrorMixPercent(dataBase)
-        pushLog(
-          'info',
-          `批次錯誤混入：每筆 ${pct}% 機率寫入非 NULL errorCode（模式 ${formApi.form.mode}）`
-        )
-      }
+      const errorMixPercent = isBatchErrorMixEnabled(dataBase)
+        ? getBatchErrorMixPercent(dataBase)
+        : null
+
+      startProgress(total, {
+        total,
+        mode: formApi.form.mode,
+        scopeType: resolveScopeType(isCustomRange, days),
+        scopeDays: days,
+        startDateTime: dataBase.startDateTime,
+        endDateTime: dataBase.endDateTime,
+        errorMixPercent,
+        chunkSize: BULK_RECORD_LIMIT,
+        concurrency: BULK_CONCURRENCY
+      })
 
       const baseUrl = dataBase.baseUrl
       const auth = basicAuthHeader(dataBase.username, dataBase.password)
@@ -272,17 +292,13 @@ export function useElasticsearchInsert(formApi: TestDataFormApi) {
               errorDetails.push(`日期 ${record.dateStr}：索引失敗${msg ? ` (${msg})` : ''}`)
             })
           } finally {
-            progress.current = success + errorCount
-            progress.success = success
-            progress.error = errorCount
+            syncProgressUi()
           }
         })()
 
         inFlight.add(task)
         void task.finally(() => inFlight.delete(task))
       }
-
-      pushLog('info', `每批 ${BULK_RECORD_LIMIT} 筆，同時最多 ${BULK_CONCURRENCY} 個 _bulk 請求`)
 
       const distributionDays = Math.max(1, days)
       const dailyCounts: number[] = []
@@ -300,8 +316,9 @@ export function useElasticsearchInsert(formApi: TestDataFormApi) {
         remaining -= take
       }
 
-      const loopDays = isCustomRange ? 1 : Math.max(1, days)
+      const loopDays = isCustomRange ? 1 : Math.max(1, days || 1)
       const dailyCountsFinal = isCustomRange ? [total] : dailyCounts
+      const dayPhaseTotal = isCustomRange ? 0 : loopDays
       const baseDate = !isCustomRange
         ? new Date(
             Number.parseInt(startDate.split('-')[0] || '0', 10),
@@ -310,17 +327,35 @@ export function useElasticsearchInsert(formApi: TestDataFormApi) {
           )
         : null
 
+      let lastUiUpdate = 0
+      const syncProgressUi = (force = false) => {
+        const now = Date.now()
+        if (!force && now - lastUiUpdate < 400) return
+        lastUiUpdate = now
+        progress.current = success + errorCount
+        progress.success = success
+        progress.error = errorCount
+      }
+
       for (let d = 0; d < loopDays; d++) {
         const date = baseDate ? new Date(baseDate) : null
         if (date) date.setDate(baseDate!.getDate() - d)
-        const dateStr = date
-          ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
-              date.getDate()
-            ).padStart(2, '0')}`
-          : `${dataBase.startDateTime} ~ ${dataBase.endDateTime}`
+        const dateStr = date ? formatCalendarDay(date) : ''
         const count = dailyCountsFinal[d] ?? 0
-        pushLog('info', `第 ${d + 1} 天 (${dateStr}) 開始，數量 ${count}`)
-        progress.statusText = `第 ${d + 1} 天 (${dateStr}) 處理中...`
+
+        if (isCustomRange) {
+          setPhaseLabel('自訂時間區間')
+        } else if (days === 0) {
+          setPhaseLabel('執行當下')
+        } else if (dayPhaseTotal > 1) {
+          setPhaseLabel(`第 ${d + 1} / ${dayPhaseTotal} 天 · ${dateStr}`)
+          pushLog(
+            'info',
+            `第 ${d + 1} / ${dayPhaseTotal} 天 · ${dateStr} · ${formatCount(count)} 筆`
+          )
+        } else if (dateStr) {
+          setPhaseLabel(dateStr)
+        }
 
         for (let i = 0; i < count; i++) {
           try {
@@ -349,21 +384,28 @@ export function useElasticsearchInsert(formApi: TestDataFormApi) {
             if (bulkRecords.length >= BULK_RECORD_LIMIT) await flushBulk()
           } catch {
             errorCount++
-            errorDetails.push(`日期 ${dateStr}：索引失敗`)
-            progress.current = success + errorCount
-            progress.error = errorCount
+            const scope = dateStr || '自訂區間'
+            errorDetails.push(`${scope}：產生或索引失敗`)
+            syncProgressUi(true)
           }
         }
+        syncProgressUi(true)
       }
 
       await flushBulk(true)
       await Promise.all([...inFlight])
 
-      progress.statusText = '處理完成'
+      syncProgressUi(true)
+      progress.finished = true
+      setPhaseLabel('')
       progress.errors = errorDetails
       if (errorDetails.length) {
         errorDetails.slice(0, 20).forEach((e) => pushLog('error', e))
       }
+      pushLog(
+        errorCount === 0 ? 'success' : success > 0 ? 'warning' : 'error',
+        `完成 ${formatCount(success)} / ${formatCount(total)}${errorCount > 0 ? `，失敗 ${formatCount(errorCount)}` : ''}`
+      )
 
       if (errorCount === 0) {
         formApi.setStatus(`批量完成，成功 ${success}/${total}`, 'success')

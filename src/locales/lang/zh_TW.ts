@@ -91,6 +91,110 @@ const zh_TW = {
   'page.api': 'API 客戶端',
   'page.form': '表單控制',
   'page.testData.input': '測試資料產生',
+  'page.testData.subtitle':
+    '產生 3DS 測試文件並寫入 Elasticsearch。可「手動寫入」或「定時連續寫入」（每輪以當下時間 POST 批次）。',
+
+  'testData.params.title': '批次參數',
+  'testData.params.productMode': '產品模式',
+  'testData.params.baseDate': '基準日期',
+  'testData.params.batchSize': '每批筆數',
+  'testData.params.batchDays': '生成天數',
+  'testData.params.batchDays.scheduled': '定時模式固定為 0（每輪使用執行當下的時間）',
+  'testData.params.batchDays.manualRange': '手動指定時間區間時不使用天數',
+  'testData.params.batchDays.manualAuto': '往回生成多少天的資料',
+  'testData.params.batchSize.hint': 'POST 批次與定時寫入的筆數；預覽批次亦依此數量',
+  'testData.params.batchDays.hint':
+    'POST 批次時將多筆分散到「基準日期」往回 N 天；0 = 集中在執行當下',
+
+  'testData.tips.toggle': '操作說明與 POST 差異',
+  'testData.tips.flow':
+    '建議流程：還原預設 →（可選）隨機填表 → 預覽 JSON 確認 → POST 寫入 ES。預覽不會寫入索引。',
+  'testData.tips.single.title': 'POST 單筆',
+  'testData.tips.single.body':
+    '固定 1 筆；依目前表單內容寫入，不會自動隨機。要先隨機請先按「隨機填表」。不受「批次錯誤混入」影響。',
+  'testData.tips.batch.title': 'POST 批次',
+  'testData.tips.batch.body':
+    '筆數 = 每批筆數；每一筆會先隨機填表再寫入。可勾選錯誤區塊的「批次錯誤混入」。依生成天數分散日期（定時模式固定為當下）。',
+  'testData.tips.scheduled.title': '定時連續寫入',
+  'testData.tips.scheduled.body':
+    '等同每隔 N 秒自動執行一次 POST 批次；無 POST 單筆。生成天數固定 0，時間戳為每輪執行當下。',
+
+  'testData.writeMode.title': '寫入方式',
+  'testData.writeMode.manual.label': '手動寫入',
+  'testData.writeMode.manual.hint': '自行按鈕 POST 單筆或批次（可先看 JSON 預覽）',
+  'testData.writeMode.scheduled.label': '定時連續寫入',
+  'testData.writeMode.scheduled.hint': '每隔 N 秒自動 POST 一批，時間戳為執行當下',
+
+  'testData.actions.prepare.title': '① 準備表單',
+  'testData.actions.prepare.hint': '還原預設或隨機填寫欄位（不寫入 ES）',
+  'testData.actions.prepare.loadDefaults': '還原預設',
+  'testData.actions.prepare.randomize': '隨機填表',
+
+  'testData.actions.preview.title': '② 預覽 JSON',
+  'testData.actions.preview.hint': '僅在下方顯示 JSON，不會呼叫 Elasticsearch',
+  'testData.actions.preview.single': '預覽單筆 JSON',
+  'testData.actions.preview.batch': '預覽批次 JSON',
+
+  'testData.actions.post.title': '③ 寫入 Elasticsearch',
+  'testData.actions.post.hint': '依上方「每批筆數／生成天數」產生資料並 POST',
+  'testData.actions.post.single': 'POST 單筆',
+  'testData.actions.post.single.tip': '1 筆 · 表單現值 · 不隨機',
+  'testData.actions.post.batch': 'POST 批次',
+  'testData.actions.post.batch.tip': '{count} 筆 · 每筆隨機 · 可混錯誤',
+
+  'testData.actions.schedule.title': '定時連續 POST 批次',
+  'testData.actions.schedule.hint':
+    '啟動後會立即 POST 一批，之後每隔指定秒數重複。每批筆數見上方；時間為執行當下（生成天數 = 0）。',
+  'testData.actions.schedule.interval': '間隔（秒）',
+  'testData.actions.schedule.start': '開始定時',
+  'testData.actions.schedule.stop': '停止定時',
+  'testData.actions.schedule.nextIn': '距下次 POST：{seconds} 秒',
+  'testData.actions.schedule.note': '每輪 POST {size} 筆（與上方「每批筆數」相同）',
+  'testData.actions.weightWarning': 'ARes／RReq 權重須各為 100% 才能隨機填表與 POST 批次',
+
+  'testData.preview.single.placeholder': '（按「預覽單筆 JSON」產生）',
+  'testData.preview.single.hint':
+    '依表單現值產生，不寫入 ES；與 POST 單筆相同邏輯（不會自動隨機）。',
+  'testData.preview.batch.placeholder': '（按「預覽批次 JSON」產生）',
+  'testData.preview.batch.hint':
+    '依「每批筆數」產生多筆 JSON，不寫入 ES。POST 批次時會再逐筆隨機填表，內容可能與預覽不同。',
+  'testData.preview.batch.note':
+    '若勾選「批次 POST 時依比例隨機混入錯誤」，預覽會依比例套用 EMV 錯誤預設。',
+
+  'testData.status.defaultsLoaded': '已還原預設值',
+  'testData.status.previewSingle': '已產生單筆 JSON 預覽（{index}）',
+  'testData.status.previewBatch': '已產生批次 JSON 預覽，共 {count} 筆（{index}）',
+
+  'testData.errorMix.enableLabel': '批次 POST 時依比例隨機混入錯誤',
+  'testData.errorMix.percentLabel': '混入比例 (0–100，%)',
+  'testData.errorMix.percentPlaceholder': '15',
+  'testData.errorMix.percentTitle': '留空則使用預設 15%',
+  'testData.errorMix.description':
+    '僅影響「POST 批次」與定時連續寫入：每筆在 generateRandom 之後抽樣。3DSS 模式從 S／D／A 預設均勻抽樣（含 101·S、201·D、305·A 等）；ACS 模式以 A 類為主。POST 單筆不受此選項影響。比例請填 0–100 的百分比（例如 15 代表 15%）；欄位留空時依預設 15%。若 Admin／Grafana 錯誤計數遠小於插入筆數，請檢查時間範圍是否涵蓋各筆的 first_seen_timestamp，以及篩選條件（requestor、卡組織等）。',
+
+  'testData.progress.title': 'POST 批次進度',
+  'testData.progress.close': '關閉',
+  'testData.progress.processing': '寫入中',
+  'testData.progress.done': '已完成',
+  'testData.progress.count': '{current} / {total}',
+  'testData.progress.elapsed': '耗時 {seconds}s',
+  'testData.progress.rate': '{rate} 筆/秒',
+  'testData.progress.eta': '約剩 {seconds}s',
+  'testData.progress.success': '成功 {count}',
+  'testData.progress.failed': '失敗 {count}',
+  'testData.progress.scope.custom': '時間 {range}',
+  'testData.progress.scope.days': '分散 {days} 天（由基準日期往回）',
+  'testData.progress.scope.now': '時間戳：執行當下',
+  'testData.progress.summary.total': '共 {count} 筆',
+  'testData.progress.summary.mode': '模式 {mode}',
+  'testData.progress.summary.errorMix': '錯誤混入 {percent}%',
+  'testData.progress.summary.bulk': '每包 {chunk} 筆 · 並行 {concurrency}',
+  'testData.progress.phase.custom': '自訂時間區間',
+  'testData.progress.phase.day': '第 {current} / {total} 天 · {date}',
+  'testData.progress.log.toggle': '詳細記錄 ({count})',
+  'testData.progress.log.empty': '執行中若切換天次或發生錯誤會顯示於此',
+  'testData.progress.errorsMore': '…另有 {count} 筆錯誤',
+
   'page.rateLimit.group': 'DDoS 限流測試',
   'page.rateLimit.areqCard': 'AReq 卡號限流',
   'page.rateLimit.areqMerchant': 'AReq 商戶限流',

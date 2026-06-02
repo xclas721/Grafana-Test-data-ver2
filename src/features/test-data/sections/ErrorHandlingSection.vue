@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import { Card, Input } from '@/shared/components'
+
+const { t } = useI18n()
 import {
   EMV_THREEDS_ERROR_PRESETS,
   type EmvThreeDSErrorPreset
@@ -71,20 +74,20 @@ const presets = EMV_THREEDS_ERROR_PRESETS
               (e) => emit('update:enableBatchErrorMix', (e.target as HTMLInputElement).checked)
             "
           />
-          <span class="text-sm font-medium">批次插入時依比例隨機混入錯誤</span>
+          <span class="text-sm font-medium">{{ t('testData.errorMix.enableLabel') }}</span>
         </label>
         <div class="flex items-center gap-2">
-          <label for="batchErrorMixPercent" class="text-sm text-base-content/80"
-            >混入比例 (0–100，%)</label
-          >
+          <label for="batchErrorMixPercent" class="text-sm text-base-content/80">{{
+            t('testData.errorMix.percentLabel')
+          }}</label>
           <input
             id="batchErrorMixPercent"
             type="number"
             min="0"
             max="100"
             step="1"
-            placeholder="15"
-            title="留空則使用預設 15%"
+            :placeholder="t('testData.errorMix.percentPlaceholder')"
+            :title="t('testData.errorMix.percentTitle')"
             class="input input-bordered input-sm w-20"
             :disabled="!props.enableBatchErrorMix"
             :value="props.batchErrorMixPercent"
@@ -100,16 +103,7 @@ const presets = EMV_THREEDS_ERROR_PRESETS
           />
         </div>
         <p class="text-xs text-base-content/60 w-full basis-full leading-relaxed">
-          僅影響<strong>批量生成並 POST</strong>：每筆在
-          <code class="bg-base-300/60 px-1 rounded">generateRandom</code>
-          之後抽樣。3DSS 模式從 S／D／A 預設<strong>均勻</strong>抽樣（含 101·S、201·D、305·A
-          等）；ACS 模式以
-          <strong>A</strong> 類為主。單筆插入不受此選項影響。
-          <strong>比例請填 0–100 的百分比</strong>（例如 15 代表
-          15%）；欄位<strong>留空</strong>時依預設 15%，避免誤清空後變成 0% 卻以為仍有混入。 若
-          Admin／Grafana 錯誤計數遠小於插入筆數，請檢查<strong>時間範圍</strong>是否涵蓋各筆的
-          <code class="bg-base-300/60 px-1 rounded">first_seen_timestamp</code>
-          ，以及篩選條件（requestor、卡組織等）。
+          {{ t('testData.errorMix.description') }}
         </p>
       </div>
 

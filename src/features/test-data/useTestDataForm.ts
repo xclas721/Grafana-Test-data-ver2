@@ -1,4 +1,5 @@
 import { computed, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { defaultStateMachineReason } from '@/shared/constants/stateMachineReason'
 import { randomizeBusinessFields } from '@/composables/useBusinessFieldRandomizer'
 import { randomizeThreeDSDeviceFields } from '@/composables/useTestDataRandomizer'
@@ -79,6 +80,7 @@ function cryptoRandomUUID(): string {
 }
 
 export function useTestDataForm() {
+  const { t } = useI18n()
   const form = reactive({
     batchSize: '5',
     batchDays: '0',
@@ -625,13 +627,13 @@ export function useTestDataForm() {
     syncStatusDependencies()
     outputJson.value = ''
     batchPreviewJson.value = ''
-    setStatus('預設值已載入', 'success')
+    setStatus(t('testData.status.defaultsLoaded'), 'success')
   }
 
   function generateOne() {
     const built = buildDocument()
     outputJson.value = JSON.stringify(built.document, null, 2)
-    setStatus(`已輸出單筆文件（${built.fullIndex}）`, 'success')
+    setStatus(t('testData.status.previewSingle', { index: built.fullIndex }), 'success')
   }
 
   function generateBatchPreview() {
@@ -649,7 +651,7 @@ export function useTestDataForm() {
       }
     })
     batchPreviewJson.value = JSON.stringify(rows, null, 2)
-    setStatus(`已生成批次預覽，共 ${count} 筆（${indexName}）`, 'success')
+    setStatus(t('testData.status.previewBatch', { count, index: indexName }), 'success')
   }
 
   watch(

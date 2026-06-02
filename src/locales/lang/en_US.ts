@@ -92,6 +92,110 @@ const en_US = {
   'page.api': 'API Client',
   'page.form': 'Form Utils',
   'page.testData.input': 'Test Data Generator',
+  'page.testData.subtitle':
+    'Build 3DS test documents and POST to Elasticsearch. Choose manual write or scheduled continuous write (each run uses current time).',
+
+  'testData.params.title': 'Batch parameters',
+  'testData.params.productMode': 'Product mode',
+  'testData.params.baseDate': 'Base date',
+  'testData.params.batchSize': 'Records per batch',
+  'testData.params.batchDays': 'Days to generate',
+  'testData.params.batchDays.scheduled': 'Scheduled mode uses 0 (timestamp = run time)',
+  'testData.params.batchDays.manualRange': 'Not used when manual time range is set',
+  'testData.params.batchDays.manualAuto': 'How many past days of data to generate',
+  'testData.params.batchSize.hint': 'Used by POST batch, schedule, and batch preview count',
+  'testData.params.batchDays.hint':
+    'Spreads batch POST across N days before base date; 0 = timestamp at run time',
+
+  'testData.tips.toggle': 'How it works & POST differences',
+  'testData.tips.flow':
+    'Suggested flow: reset defaults → (optional) randomize → preview JSON → POST to ES. Preview never writes.',
+  'testData.tips.single.title': 'POST single',
+  'testData.tips.single.body':
+    'Exactly 1 record from current form values — no auto-randomize. Randomize first if needed. Batch error mix does not apply.',
+  'testData.tips.batch.title': 'POST batch',
+  'testData.tips.batch.body':
+    'Count = records per batch; each record is randomized before write. Optional batch error mix. Spread by “days to generate” (schedule uses run time).',
+  'testData.tips.scheduled.title': 'Scheduled continuous',
+  'testData.tips.scheduled.body':
+    'Runs POST batch every N seconds — no single POST. Days = 0; timestamp is each run’s time.',
+
+  'testData.writeMode.title': 'Write mode',
+  'testData.writeMode.manual.label': 'Manual write',
+  'testData.writeMode.manual.hint': 'POST single or batch on demand (preview JSON first)',
+  'testData.writeMode.scheduled.label': 'Scheduled continuous',
+  'testData.writeMode.scheduled.hint': 'POST a batch every N seconds using current timestamp',
+
+  'testData.actions.prepare.title': '① Prepare form',
+  'testData.actions.prepare.hint': 'Reset defaults or randomize fields (no ES write)',
+  'testData.actions.prepare.loadDefaults': 'Reset defaults',
+  'testData.actions.prepare.randomize': 'Randomize fields',
+
+  'testData.actions.preview.title': '② Preview JSON',
+  'testData.actions.preview.hint': 'Show JSON below only — does not call Elasticsearch',
+  'testData.actions.preview.single': 'Preview single JSON',
+  'testData.actions.preview.batch': 'Preview batch JSON',
+
+  'testData.actions.post.title': '③ Write to Elasticsearch',
+  'testData.actions.post.hint': 'Generate from “records per batch / days” above and POST',
+  'testData.actions.post.single': 'POST single',
+  'testData.actions.post.single.tip': '1 record · form as-is · no auto-random',
+  'testData.actions.post.batch': 'POST batch',
+  'testData.actions.post.batch.tip': '{count} records · random each · optional errors',
+
+  'testData.actions.schedule.title': 'Scheduled batch POST',
+  'testData.actions.schedule.hint':
+    'POSTs immediately, then repeats every interval. Batch size from above; timestamp = now (days = 0).',
+  'testData.actions.schedule.interval': 'Interval (sec)',
+  'testData.actions.schedule.start': 'Start schedule',
+  'testData.actions.schedule.stop': 'Stop schedule',
+  'testData.actions.schedule.nextIn': 'Next POST in {seconds}s',
+  'testData.actions.schedule.note': 'Each run POSTs {size} record(s) (same as “records per batch”)',
+  'testData.actions.weightWarning': 'ARes/RReq weights must total 100% to randomize and POST batch',
+
+  'testData.preview.single.placeholder': '(Click “Preview single JSON”)',
+  'testData.preview.single.hint':
+    'From current form values — not written to ES; same as POST single (no auto-random).',
+  'testData.preview.batch.placeholder': '(Click “Preview batch JSON”)',
+  'testData.preview.batch.hint':
+    'Shows JSON for “records per batch” only — not written to ES. POST batch re-randomizes each record.',
+  'testData.preview.batch.note':
+    'If “mix errors on batch POST” is enabled, preview applies EMV error presets by ratio.',
+
+  'testData.status.defaultsLoaded': 'Defaults restored',
+  'testData.status.previewSingle': 'Single JSON preview ready ({index})',
+  'testData.status.previewBatch': 'Batch JSON preview ready, {count} record(s) ({index})',
+
+  'testData.errorMix.enableLabel': 'Mix random errors on batch POST (by ratio)',
+  'testData.errorMix.percentLabel': 'Mix ratio (0–100, %)',
+  'testData.errorMix.percentPlaceholder': '15',
+  'testData.errorMix.percentTitle': 'Empty field uses default 15%',
+  'testData.errorMix.description':
+    'Applies only to “POST batch” and scheduled continuous write: sampled after generateRandom per record. 3DSS: even mix from S/D/A presets; ACS: mostly A. Single POST is unaffected. Use 0–100 (%); empty = 15%. If Grafana error counts look low, check time range vs first_seen_timestamp and filters.',
+
+  'testData.progress.title': 'Batch POST progress',
+  'testData.progress.close': 'Close',
+  'testData.progress.processing': 'Writing',
+  'testData.progress.done': 'Done',
+  'testData.progress.count': '{current} / {total}',
+  'testData.progress.elapsed': '{seconds}s elapsed',
+  'testData.progress.rate': '{rate} rec/s',
+  'testData.progress.eta': '~{seconds}s left',
+  'testData.progress.success': 'OK {count}',
+  'testData.progress.failed': 'Failed {count}',
+  'testData.progress.scope.custom': 'Range {range}',
+  'testData.progress.scope.days': 'Spread over {days} day(s) from base date',
+  'testData.progress.scope.now': 'Timestamp: run time',
+  'testData.progress.summary.total': '{count} record(s)',
+  'testData.progress.summary.mode': 'Mode {mode}',
+  'testData.progress.summary.errorMix': 'Error mix {percent}%',
+  'testData.progress.summary.bulk': '{chunk} per bulk · {concurrency} parallel',
+  'testData.progress.phase.custom': 'Custom time range',
+  'testData.progress.phase.day': 'Day {current} / {total} · {date}',
+  'testData.progress.log.toggle': 'Log ({count})',
+  'testData.progress.log.empty': 'Day changes and errors appear here',
+  'testData.progress.errorsMore': '…and {count} more error(s)',
+
   'page.rateLimit.group': 'DDoS Rate Limit Tests',
   'page.rateLimit.areqCard': 'AReq Card Limit',
   'page.rateLimit.areqMerchant': 'AReq Merchant Limit',
