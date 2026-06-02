@@ -1,6 +1,6 @@
-# Brainwave Frontend
+# InsightEdge ES 測試資料
 
-Brainwave Frontend 是一個基於 Vue 3 + TypeScript + Vite 的前端專案，採用靜態路由架構，提供可擴充的基礎設施與工具庫，支援後台管理與前台會員流程。
+Elasticsearch 測試資料產生與 ACS DDoS 限流驗證的 Web 工具（Vue 3 + TypeScript + Vite）。主要功能為 Test Data 寫入 ES 與五種限流測試頁。
 
 ## 特色
 
@@ -133,7 +133,7 @@ src/
 - `VITE_FRONTEND_CONTEXT_PATH` - 前端上下文路徑（預設: `/`）
 - `VITE_BACKEND_API_TIMEOUT` - API 請求超時時間（預設: `60000` ms）
 - `VITE_PAGE_SIZE` - 預設分頁大小（預設: `10`）
-- `VITE_SYSTEM_ID` - 系統識別碼（預設: `Brainwave`）
+- `VITE_SYSTEM_ID` - 系統識別碼（預設: `InsightEdge-ES-TestData`）
 - `VITE_HTTPS_ENABLED` - 啟用 HTTPS（預設: `false`）
 - `VITE_HOST` - 開發伺服器主機（預設: `localhost`）
 

@@ -167,14 +167,6 @@ function stopTest() {
 </script>
 
 <template>
-  <div class="text-xs breadcrumbs text-base-content/60 mb-4">
-    <ul>
-      <li>工具</li>
-      <li>DDoS 限流測試</li>
-      <li>3DS Method 限流</li>
-    </ul>
-  </div>
-
   <DDoSTestIntro test-type="threeDSMethod" class="mb-6" />
 
   <Card :title="CARD_TITLES.config" subtitle="3DS Method - 前 5 次通過，第 6 次起限流">

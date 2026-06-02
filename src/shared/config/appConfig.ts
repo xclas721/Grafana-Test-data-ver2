@@ -31,7 +31,7 @@ export const appConfig: PublicConfig = {
   ),
   PAGE_SIZE: Number(runtime.PAGE_SIZE ?? import.meta.env.VITE_PAGE_SIZE ?? 10),
   STAGE: runtime.STAGE ?? import.meta.env.MODE ?? 'dev',
-  SYSTEM_ID: runtime.SYSTEM_ID ?? import.meta.env.VITE_SYSTEM_ID ?? 'Brainwave',
+  SYSTEM_ID: runtime.SYSTEM_ID ?? import.meta.env.VITE_SYSTEM_ID ?? 'InsightEdge-ES-TestData',
   BACKEND_CONTEXT_PATH:
     runtime.BACKEND_CONTEXT_PATH ?? import.meta.env.VITE_BACKEND_CONTEXT_PATH ?? ''
 }

@@ -1,8 +1,8 @@
 const zh_TW = {
   // ===== 應用程式 =====
-  'app.name': 'Brainwave',
-  'app.title': '讓 Brainwave 成真',
-  'app.description': '通用多模組 Spring Boot 基礎架構',
+  'app.name': 'InsightEdge ES 測試資料',
+  'app.title': 'InsightEdge ES 測試資料',
+  'app.description': 'Elasticsearch 測試資料產生與 ACS 限流驗證工具',
 
   // ===== 通用 UI =====
   'ui.confirm': '確認',
@@ -102,9 +102,9 @@ const zh_TW = {
   'page.examples.guide': '實例說明',
 
   // ===== 首頁 =====
-  'home.welcome': '為靈感而生',
+  'home.welcome': 'InsightEdge ES 測試工具',
   'home.subtitle':
-    'Brainwave 為那些突然出現的好點子而生。\n不論是商業構想、實驗功能，或快速原型，\n你都能立刻開始，而不是從零準備。\n\n基礎架構已就緒，\n剩下的，只需要你的創意。',
+    '用於產生寫入 Elasticsearch 的 3DS 測試交易資料，並驗證 ACS AReq／CReq／3DS Method 的 DDoS 限流行為。\n\n請由側欄進入「測試資料產生」或「DDoS 限流測試」。',
   'home.quickLinks': '快速導覽',
   'home.modules': '模組狀態',
   'home.stats.modules': '核心模組',
@@ -130,7 +130,7 @@ const zh_TW = {
 
   // ===== 功能展示 =====
   'showcase.title': '功能展示-公用程式',
-  'showcase.subtitle': 'Brainwave 前端共用元件與公用程式庫總覽',
+  'showcase.subtitle': 'InsightEdge ES 測試資料前端共用元件與公用程式庫總覽',
   'showcase.button': '按鈕組件 (Button)',
   'showcase.button.desc': '統一的按鈕組件，支援多種變體、尺寸和狀態',
   'showcase.button.primary': '主要',
@@ -249,7 +249,7 @@ const zh_TW = {
   'auth.switchToFrontLogin': '改用登入',
 
   // ===== Landing =====
-  'landing.title': 'Brainwave',
+  'landing.title': 'InsightEdge ES 測試資料',
   'landing.subtitle': 'Build ideas fast, keep architecture clean.',
   'landing.ready': '準備好開始了嗎？現在就出發。',
   'landing.startHere': '從這裡開始',
@@ -281,12 +281,12 @@ const zh_TW = {
   'btn.cancel': '取消',
 
   // ===== 關於 =====
-  'about.title': '關於 Brainwave',
+  'about.title': '關於 InsightEdge ES 測試資料',
   'about.description':
-    'Brainwave 是一個通用的多模組 Spring Boot 基礎架構專案，提供快速開發的基礎模板。',
+    '本專案提供 Grafana／Elasticsearch 情境下的測試資料組裝、單筆／批次寫入，以及 ACS 限流端點的 Web 化驗證。',
   'about.feature.static': '靜態路由架構',
   'about.feature.static.desc':
-    'Brainwave 前端採用靜態路由模式，將路由定義直接寫入前端程式碼中。這種方式確保了與後端 API 協作時有明確的路徑基準，並提升了開發時的導航體驗與型別安全。',
+    '前端採用 Vue 3 靜態路由，測試資料與限流測試分開路徑，便於維護與擴充。',
   'about.feature.modular': '模組化設計',
   'about.feature.modular.desc':
     '系統採用模組化設計原則，建議將新增的功能以獨立模組與固定路由進行維護。這不僅讓導覽結構更清晰，也讓 UI 行為與權限控管更容易管理。',
@@ -310,8 +310,8 @@ const zh_TW = {
 
   // ===== 主題選擇 =====
   'theme.select': '選擇主題',
-  'theme.brainwave': 'Brainwave (自訂)',
-  'theme.brainwave-dark': 'Brainwave (自訂-深色)',
+  'theme.brainwave': '淺色',
+  'theme.brainwave-dark': '深色',
 
   // ===== 時區選擇 =====
   'timezone.select': '選擇時區',
@@ -559,7 +559,7 @@ const zh_TW = {
 
   // ===== 組件說明 =====
   'components.guide.title': '組件說明',
-  'components.guide.subtitle': '了解 Brainwave 平台提供的 UI 組件與使用方式',
+  'components.guide.subtitle': '了解本專案提供的 UI 組件與使用方式',
   'components.guide.definition.title': '什麼是組件？',
   'components.guide.definition.content':
     '組件是可復用的 UI 單元，基於 DaisyUI 封裝，提供一致的 API 與樣式。',
@@ -696,7 +696,7 @@ const zh_TW = {
 
   // ===== 公用程式說明 =====
   'tools.guide.title': '公用程式說明',
-  'tools.guide.subtitle': '了解 Brainwave 平台提供的各種公用程式函數',
+  'tools.guide.subtitle': '了解本專案提供的各種公用程式函數',
   'tools.guide.definition.title': '什麼是公用程式？',
   'tools.guide.definition.content':
     '公用程式是獨立的、可復用的工具函數/工具類，不依賴業務邏輯，可以直接在代碼中使用。',

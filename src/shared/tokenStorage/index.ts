@@ -1,6 +1,6 @@
 /**
  * Token 儲存策略：預設使用 localStorage，可於 app 初始化時替換為 session 或自訂實作。
- * @see docs/權杖儲存策略說明.md（Brainwave-frontend）
+ * @see docs/權杖儲存策略說明.md
  */
 import type { TokenStorageStrategy } from './types'
 import { createLocalStorageStrategy } from './localStorageStrategy'

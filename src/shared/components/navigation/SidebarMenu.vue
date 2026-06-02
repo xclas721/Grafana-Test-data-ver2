@@ -70,6 +70,7 @@ import type { Component } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Shield, Wrench, ChevronRight } from 'lucide-vue-next'
+import { RATE_LIMIT_MENU } from '@/features/rate-limit/constants'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -113,33 +114,11 @@ const menuTree = ref<MenuItem[]>([
     i18nCode: 'page.rateLimit.group',
     icon: Shield,
     isCollapsed: true,
-    children: [
-      {
-        id: 'rate-limit-areq-card',
-        path: '/rate-limit-test/areq-card',
-        i18nCode: 'page.rateLimit.areqCard'
-      },
-      {
-        id: 'rate-limit-areq-merchant',
-        path: '/rate-limit-test/areq-merchant',
-        i18nCode: 'page.rateLimit.areqMerchant'
-      },
-      {
-        id: 'rate-limit-creq-cp1',
-        path: '/rate-limit-test/creq-checkpoint1',
-        i18nCode: 'page.rateLimit.creqCheckpoint1'
-      },
-      {
-        id: 'rate-limit-creq-cp2',
-        path: '/rate-limit-test/creq-checkpoint2',
-        i18nCode: 'page.rateLimit.creqCheckpoint2'
-      },
-      {
-        id: 'rate-limit-3dsmethod',
-        path: '/rate-limit-test/3dsmethod',
-        i18nCode: 'page.rateLimit.threeDSMethod'
-      }
-    ]
+    children: RATE_LIMIT_MENU.map((item) => ({
+      id: `rate-limit-${item.path}`,
+      path: item.path,
+      i18nCode: item.i18nCode
+    }))
   }
 ])
 

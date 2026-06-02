@@ -120,3 +120,12 @@ export const TEST_DESCRIPTIONS = {
     expected: '預期：前 5 次 PASS，第 6 次起 BLOCKED。'
   }
 } as const
+
+/** 側欄與路由共用（單一來源） */
+export const RATE_LIMIT_MENU = [
+  { path: '/rate-limit-test/areq-card', i18nCode: 'page.rateLimit.areqCard' },
+  { path: '/rate-limit-test/areq-merchant', i18nCode: 'page.rateLimit.areqMerchant' },
+  { path: '/rate-limit-test/creq-checkpoint1', i18nCode: 'page.rateLimit.creqCheckpoint1' },
+  { path: '/rate-limit-test/creq-checkpoint2', i18nCode: 'page.rateLimit.creqCheckpoint2' },
+  { path: '/rate-limit-test/3dsmethod', i18nCode: 'page.rateLimit.threeDSMethod' }
+] as const

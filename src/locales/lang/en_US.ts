@@ -1,8 +1,8 @@
 const en_US = {
   // ===== Application =====
-  'app.name': 'Brainwave',
-  'app.title': 'Make Brainwave Real',
-  'app.description': 'Generic multi-module Spring Boot base architecture',
+  'app.name': 'InsightEdge ES Test Data',
+  'app.title': 'InsightEdge ES Test Data',
+  'app.description': 'Elasticsearch test data generation and ACS rate-limit verification',
 
   // ===== Common UI =====
   'ui.confirm': 'Confirm',
@@ -103,9 +103,9 @@ const en_US = {
   'page.examples.guide': 'Examples Guide',
 
   // ===== Home Page =====
-  'home.welcome': 'Born for Ideas',
+  'home.welcome': 'InsightEdge ES Test Tools',
   'home.subtitle':
-    "Brainwave is born for those sudden good ideas.\nWhether it's a business concept, experimental feature, or rapid prototype,\nyou can start immediately, not from scratch.\n\nThe infrastructure is ready,\nall you need is your creativity.",
+    'Generate 3DS transaction documents for Elasticsearch and verify ACS AReq / CReq / 3DS Method DDoS rate limits.\n\nUse the sidebar: Test Data Generator or DDoS Rate Limit Tests.',
   'home.quickLinks': 'Quick Links',
   'home.modules': 'Module Status',
   'home.stats.modules': 'Core Modules',
@@ -134,7 +134,7 @@ const en_US = {
 
   // ===== Showcase =====
   'showcase.title': 'Showcase - Utilities',
-  'showcase.subtitle': 'Brainwave frontend shared components and utility library overview',
+  'showcase.subtitle': 'InsightEdge ES test data — shared components and utilities overview',
   'showcase.button': 'Button Component',
   'showcase.button.desc':
     'Unified button component supporting multiple variants, sizes, and states',
@@ -254,7 +254,7 @@ const en_US = {
   'auth.switchToFrontLogin': 'Use login instead',
 
   // ===== Landing =====
-  'landing.title': 'Brainwave',
+  'landing.title': 'InsightEdge ES Test Data',
   'landing.subtitle': 'Build ideas fast, keep architecture clean.',
   'landing.ready': 'Ready to build? Just start.',
   'landing.startHere': 'Start Here',
@@ -286,12 +286,12 @@ const en_US = {
   'btn.cancel': 'Cancel',
 
   // ===== About =====
-  'about.title': 'About Brainwave',
+  'about.title': 'About InsightEdge ES Test Data',
   'about.description':
-    'Brainwave is a generic multi-module Spring Boot base architecture project that provides a foundation template for rapid development.',
+    'This project provides test document assembly for Grafana/Elasticsearch, single and bulk indexing, and web-based ACS rate-limit verification.',
   'about.feature.static': 'Static Route Architecture',
   'about.feature.static.desc':
-    'Brainwave frontend adopts a static route pattern, with route definitions written directly into the frontend code. This approach ensures clear path baselines when collaborating with backend APIs and improves navigation experience and type safety during development.',
+    'Vue 3 static routes separate test data generation from rate-limit tools for easier maintenance.',
   'about.feature.modular': 'Modular Design',
   'about.feature.modular.desc':
     'The system adopts modular design principles, recommending that new features be maintained as independent modules with fixed routes. This not only makes the navigation structure clearer but also makes UI behavior and permission control easier to manage.',
@@ -315,8 +315,8 @@ const en_US = {
 
   // ===== Theme Selection =====
   'theme.select': 'Select Theme',
-  'theme.brainwave': 'Brainwave (Custom)',
-  'theme.brainwave-dark': 'Brainwave (Dark)',
+  'theme.brainwave': 'Light',
+  'theme.brainwave-dark': 'Dark',
 
   // ===== Timezone Selection =====
   'timezone.select': 'Select Timezone',
@@ -466,7 +466,7 @@ const en_US = {
 
   // ===== Components Guide =====
   'components.guide.title': 'Components Guide',
-  'components.guide.subtitle': 'UI components and usage on Brainwave',
+  'components.guide.subtitle': 'UI components and usage in this project',
   'components.guide.definition.title': 'What are Components?',
   'components.guide.definition.content':
     'Components are reusable UI units, built on DaisyUI with consistent API and styling.',
@@ -727,7 +727,7 @@ const en_US = {
 
   // ===== Utilities Guide =====
   'tools.guide.title': 'Utilities Guide',
-  'tools.guide.subtitle': 'Learn about various utility functions provided by Brainwave',
+  'tools.guide.subtitle': 'Learn about utility functions provided by this project',
   'tools.guide.definition.title': 'What are Utilities?',
   'tools.guide.definition.content':
     'Utilities are independent, reusable utility functions/classes that do not depend on business logic and can be used directly in code.',

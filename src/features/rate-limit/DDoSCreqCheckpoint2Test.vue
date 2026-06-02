@@ -191,14 +191,6 @@ function stopTest() {
 </script>
 
 <template>
-  <div class="text-xs breadcrumbs text-base-content/60 mb-4">
-    <ul>
-      <li>工具</li>
-      <li>DDoS 限流測試</li>
-      <li>CReq 檢查點2</li>
-    </ul>
-  </div>
-
   <DDoSTestIntro test-type="creqCheckpoint2" class="mb-6" />
 
   <Card :title="CARD_TITLES.config" subtitle="CReq 檢查點2 - 觀察由通過轉為限流">

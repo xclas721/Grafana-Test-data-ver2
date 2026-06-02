@@ -25,7 +25,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'test-data/input',
         name: 'test-data-input',
-        meta: { title: 'Test Data Input' },
+        meta: { title: 'page.testData.input' },
         component: () => import('@/pages/TestDataInputPage.vue')
       },
       {
@@ -97,15 +97,18 @@ const router = createRouter({
   routes
 })
 
-const DEFAULT_DOCUMENT_TITLE = 'Brainwave Platform'
+function getAppDisplayName(): string {
+  return i18n.global.t('app.name')
+}
 
 router.afterEach((to) => {
+  const brand = getAppDisplayName()
   const titleKey = to.meta.title as string | undefined
   if (titleKey) {
     const t = i18n.global.t(titleKey)
-    document.title = t !== titleKey ? `${t} | Brainwave` : DEFAULT_DOCUMENT_TITLE
+    document.title = t !== titleKey ? `${t} | ${brand}` : brand
   } else {
-    document.title = DEFAULT_DOCUMENT_TITLE
+    document.title = brand
   }
 })
 

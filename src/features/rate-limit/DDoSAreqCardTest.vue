@@ -197,14 +197,6 @@ const expectedBlocked = computed(() => config.cardCount * Math.max(0, config.req
 </script>
 
 <template>
-  <div class="text-xs breadcrumbs text-base-content/60 mb-4">
-    <ul>
-      <li>工具</li>
-      <li>DDoS 限流測試</li>
-      <li>AReq 卡號限流</li>
-    </ul>
-  </div>
-
   <DDoSTestIntro test-type="areqCard" class="mb-6" />
 
   <Card :title="CARD_TITLES.config" subtitle="AReq 卡號限流 - 每張卡前 5 次通過，第 6 次起限流">
