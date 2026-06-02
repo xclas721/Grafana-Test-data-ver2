@@ -108,7 +108,7 @@ export function randomizeBusinessFields(
     effectiveCardScheme = 'M'
   }
 
-  if (input.aresTransStatus === 'R') {
+  if (input.aresTransStatus === 'R' || input.aresTransStatus === 'N') {
     if (input.transStatusReasonMode === 'random') {
       const candidates = getTransStatusReasonCandidates(effectiveCardScheme)
       updates.transStatusReason =

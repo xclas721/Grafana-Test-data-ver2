@@ -255,7 +255,7 @@ export function resolveStatusDependencies(input: DependencyInput): DependencyOut
     transStatus = ares
   }
 
-  if (ares === 'R') {
+  if (ares === 'R' || ares === 'N') {
     disableTransStatusReason = false
     if (transStatusReason === 'NULL_VALUE') transStatusReason = '01'
   } else {

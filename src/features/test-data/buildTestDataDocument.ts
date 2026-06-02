@@ -40,6 +40,7 @@ export function buildTestDataDocument(
   if (indexBase.includes('3dss-transaction')) {
     performance_metrics.push({ path: `${cardSchemeKey}_DS_URL`, execTime: sharedAreqMs })
   }
+  const isChallengeFlow = form.aresTransStatus === 'C' || form.aresTransStatus === 'D'
   performance_metrics.push(
     { path: form.performancePath, execTime: Number(form.execTime || 0) },
     {
@@ -47,26 +48,30 @@ export function buildTestDataDocument(
       execTime: Number(form.cavvExecTime || Math.floor(Math.random() * 21 + 10))
     },
     {
-      path: 'VerificationCodeService.sendVerificationCode',
-      execTime: Number(form.otpExecTime || Math.floor(Math.random() * 61 + 20))
-    },
-    {
-      path: `/challenge/brw/${form.cardScheme}/${form.messageVersion}/${form.issuerOid}/1/${form.acsTransId}/creq`,
-      execTime: Number(form.creqExecTime || Math.floor(Math.random() * 501 + 300))
-    },
-    {
       path: `/acs-auth/auth/${form.cardScheme}/${form.messageVersion}/${form.issuerOid}/001/areq`,
       execTime: sharedAreqMs
-    },
-    {
-      path: `/acs-auth/auth/${form.cardScheme}/${form.messageVersion}/${form.issuerOid}/001/rreq`,
-      execTime: Number(form.rreqExecTime || Math.floor(Math.random() * 401 + 200))
     },
     {
       path: 'RiskEvaluationService.evaluate',
       execTime: Number(form.rbaExecTime || Math.floor(Math.random() * 151 + 50))
     }
   )
+  if (isChallengeFlow) {
+    performance_metrics.push(
+      {
+        path: 'VerificationCodeService.sendVerificationCode',
+        execTime: Number(form.otpExecTime || Math.floor(Math.random() * 61 + 20))
+      },
+      {
+        path: `/challenge/brw/${form.cardScheme}/${form.messageVersion}/${form.issuerOid}/1/${form.acsTransId}/creq`,
+        execTime: Number(form.creqExecTime || Math.floor(Math.random() * 501 + 300))
+      },
+      {
+        path: `/acs-auth/auth/${form.cardScheme}/${form.messageVersion}/${form.issuerOid}/001/rreq`,
+        execTime: Number(form.rreqExecTime || Math.floor(Math.random() * 401 + 200))
+      }
+    )
+  }
 
   const doc: Record<string, unknown> = {
     last_update_timestamp: nowIso,
