@@ -1,0 +1,138 @@
+/**
+ * Brainwave light / dark 語意化樣式（頂欄、版面、捲軸、背景光暈）
+ * 元件請優先使用 var(--app-*)，避免硬編碼色碼。
+ */
+
+/* ── Light：brainwave ── */
+[data-theme='brainwave'] {
+  color-scheme: light;
+
+  --app-header-btn-bg: color-mix(in srgb, var(--color-base-200) 75%, var(--color-primary) 8%);
+  --app-header-btn-border: color-mix(in srgb, var(--color-base-300) 85%, var(--color-primary) 12%);
+  --app-header-btn-color: color-mix(in srgb, var(--color-base-content) 58%, transparent);
+  --app-header-btn-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --app-header-btn-hover-bg: color-mix(in srgb, var(--color-base-200) 55%, var(--color-primary) 14%);
+  --app-header-btn-hover-border: color-mix(in srgb, var(--color-primary) 28%, var(--color-base-300));
+  --app-header-btn-hover-color: var(--color-base-content);
+  --app-header-btn-hover-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary) 18%, transparent);
+  --app-header-btn-active-bg: color-mix(in srgb, var(--color-primary) 16%, var(--color-base-200));
+  --app-header-focus-ring: color-mix(in srgb, var(--color-primary) 55%, transparent);
+  --app-header-switch-bg: color-mix(in srgb, var(--color-primary) 14%, var(--color-base-200));
+  --app-header-switch-border: color-mix(in srgb, var(--color-primary) 22%, var(--color-base-300));
+  --app-header-switch-hover-bg: color-mix(in srgb, var(--color-primary) 22%, var(--color-base-200));
+  --app-header-switch-thumb: #ffffff;
+  --app-header-switch-thumb-shadow: 0 1px 3px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.04);
+  --app-header-bar-bg: color-mix(in srgb, var(--color-base-100) 92%, transparent);
+  --app-header-bar-border: var(--color-base-300);
+  --app-main-bg: color-mix(in srgb, var(--color-base-200) 55%, var(--color-base-100));
+  --app-surface-glass: color-mix(in srgb, var(--color-base-100) 94%, transparent);
+  --app-dropdown-shadow: 0 8px 28px rgba(15, 23, 42, 0.1);
+  --app-card-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --app-scrollbar-thumb: color-mix(in srgb, var(--color-base-content) 28%, transparent);
+  --app-scrollbar-thumb-hover: color-mix(in srgb, var(--color-base-content) 42%, transparent);
+  --app-gradient-1: rgba(79, 70, 229, 0.16);
+  --app-gradient-2: rgba(59, 130, 246, 0.1);
+  --app-gradient-3: rgba(6, 182, 212, 0.06);
+  --app-dst-summer: #d49400;
+  --app-dst-winter: #4a90d9;
+  --app-theme-icon-sun: #9ca3af;
+  --app-theme-icon-moon: #eab308;
+  --app-nav-hover: color-mix(in srgb, var(--color-base-300) 80%, var(--color-primary) 8%);
+  --app-nav-active-bg: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  --app-nav-active-text: var(--color-primary);
+  --app-sticky-bar-bg: var(--app-surface-glass);
+  --app-sticky-bar-border: var(--color-base-300);
+}
+
+/* ── Dark：brainwave-dark ── */
+[data-theme='brainwave-dark'] {
+  color-scheme: dark;
+
+  --app-header-btn-bg: color-mix(in srgb, var(--color-base-300) 42%, transparent);
+  --app-header-btn-border: color-mix(in srgb, var(--color-base-content) 10%, transparent);
+  --app-header-btn-color: color-mix(in srgb, var(--color-base-content) 68%, transparent);
+  --app-header-btn-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --app-header-btn-hover-bg: color-mix(in srgb, var(--color-base-300) 72%, var(--color-primary) 18%);
+  --app-header-btn-hover-border: color-mix(in srgb, var(--color-primary) 35%, var(--color-base-content) 8%);
+  --app-header-btn-hover-color: var(--color-base-content);
+  --app-header-btn-hover-shadow: 0 2px 10px color-mix(in srgb, var(--color-primary) 25%, transparent);
+  --app-header-btn-active-bg: color-mix(in srgb, var(--color-primary) 22%, var(--color-base-300));
+  --app-header-focus-ring: color-mix(in srgb, var(--color-primary) 65%, #ffffff 12%);
+  --app-header-switch-bg: color-mix(in srgb, var(--color-primary) 26%, var(--color-base-200));
+  --app-header-switch-border: color-mix(in srgb, var(--color-primary) 30%, var(--color-base-content) 6%);
+  --app-header-switch-hover-bg: color-mix(in srgb, var(--color-primary) 34%, var(--color-base-200));
+  --app-header-switch-thumb: color-mix(in srgb, var(--color-base-100) 35%, #ffffff);
+  --app-header-switch-thumb-shadow: 0 1px 4px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --app-header-bar-bg: color-mix(in srgb, var(--color-base-100) 88%, transparent);
+  --app-header-bar-border: color-mix(in srgb, var(--color-base-300) 70%, transparent);
+  --app-main-bg: color-mix(in srgb, var(--color-base-200) 35%, var(--color-base-100));
+  --app-surface-glass: color-mix(in srgb, var(--color-base-100) 90%, transparent);
+  --app-dropdown-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+  --app-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --app-scrollbar-thumb: color-mix(in srgb, var(--color-base-content) 22%, transparent);
+  --app-scrollbar-thumb-hover: color-mix(in srgb, var(--color-base-content) 38%, transparent);
+  --app-gradient-1: rgba(129, 140, 248, 0.2);
+  --app-gradient-2: rgba(56, 189, 248, 0.12);
+  --app-gradient-3: rgba(168, 85, 247, 0.08);
+  --app-dst-summer: #fbbf24;
+  --app-dst-winter: #7dd3fc;
+  --app-theme-icon-sun: #94a3b8;
+  --app-theme-icon-moon: #fcd34d;
+  --app-nav-hover: color-mix(in srgb, var(--color-base-300) 50%, transparent);
+  --app-nav-active-bg: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  --app-nav-active-text: var(--color-primary);
+  --app-sticky-bar-bg: var(--app-surface-glass);
+  --app-sticky-bar-border: color-mix(in srgb, var(--color-base-300) 65%, transparent);
+}
+
+/* 捲軸（全站） */
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.header-dropdown-menu-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--app-scrollbar-thumb);
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover,
+.header-dropdown-menu-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: var(--app-scrollbar-thumb-hover);
+}
+
+/* 主內容背景光暈 */
+.app-mouse-gradient {
+  background: radial-gradient(
+    circle 1200px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    var(--app-gradient-1) 0%,
+    var(--app-gradient-2) 35%,
+    var(--app-gradient-3) 65%,
+    transparent 100%
+  );
+}
+
+/* 頂欄 */
+.header.header-bar {
+  background: var(--app-header-bar-bg) !important;
+  border-color: var(--app-header-bar-border);
+}
+
+/* 側欄導覽 */
+.app-sidebar .nav-link:hover,
+.app-sidebar .nav-item:hover > a {
+  background: var(--app-nav-hover);
+}
+
+.app-sidebar .router-link-active.nav-link {
+  background: var(--app-nav-active-bg);
+  color: var(--app-nav-active-text);
+  font-weight: 600;
+}
+
+/* Test Data 置頂操作列 */
+.app-sticky-toolbar {
+  background: var(--app-sticky-bar-bg);
+  border-color: var(--app-sticky-bar-border);
+  box-shadow: var(--app-card-shadow);
+}
+
+/* Card 微陰影（表單區塊） */
+.app-form-card {
+  box-shadow: var(--app-card-shadow);
+}

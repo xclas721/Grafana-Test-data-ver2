@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { DateTime } from 'luxon'
 import {
+  CalendarClock,
   ChevronDown,
   Circle,
   CircleCheck,
   Clock,
-  PanelLeft,
+  Globe,
+  Moon,
   RotateCcw,
   Snowflake,
   Sun
@@ -18,41 +20,30 @@ import { useThemeStore } from '@/stores/theme'
 import { useAppStore } from '@/stores/app'
 import { formatTimezoneLabel, getTimezoneList } from '@/shared/utils/appProperties'
 
-defineProps<{
-  currentTime: string
-}>()
-
-const { t } = useI18n()
+const { t, locale: i18nLocale } = useI18n()
 const i18nStore = useI18nStore()
 const themeStore = useThemeStore()
 const appStore = useAppStore()
 
-const availableThemes = themeStore.availableThemes
+const langOptions: { label: string; value: Locale }[] = [
+  { label: '繁體中文', value: 'zh_TW' },
+  { label: 'English', value: 'en_US' }
+]
 
-const currentLocale = computed({
-  get: () => i18nStore.getLocale(),
-  set: (value: Locale) => i18nStore.setLocale(value)
-})
+const langStr = computed(
+  () => langOptions.find((item) => item.value === i18nLocale.value)?.label ?? '繁體中文'
+)
 
-const currentTheme = computed({
-  get: () => themeStore.currentTheme,
-  set: (value: string) => themeStore.setTheme(value)
-})
+const isDarkMode = computed(() => themeStore.isDarkMode())
 
-const currentTimeZone = computed({
-  get: () => appStore.timeZone,
-  set: (value: string) => appStore.changeTimeZone(value)
-})
-
-const timezoneList = computed(() => getTimezoneList(currentTimeZone.value))
+const timezoneList = computed(() => getTimezoneList(appStore.timeZone))
 const systemTimeZone = computed(() => DateTime.local().zoneName)
 const systemTimezoneOffset = computed(
   () => formatTimezoneLabel(systemTimeZone.value).split(' | ')[0] ?? ''
 )
 const currentTimezoneLabel = computed(
   () =>
-    timezoneList.value.find((item) => item.value === currentTimeZone.value)?.label ??
-    currentTimeZone.value
+    timezoneList.value.find((item) => item.value === appStore.timeZone)?.label ?? appStore.timeZone
 )
 const currentTimezoneOffset = computed(() => currentTimezoneLabel.value.split(' | ')[0] ?? '')
 const currentTimezoneName = computed(
@@ -70,48 +61,129 @@ function isDSTNow(zone: string): boolean {
 }
 
 function resetToSystemTimezone() {
-  currentTimeZone.value = systemTimeZone.value
+  appStore.changeTimeZone(systemTimeZone.value)
 }
+
+function handleChangeTimezone(value: string) {
+  appStore.changeTimeZone(value)
+}
+
+function handleChangeLanguage(value: Locale) {
+  i18nStore.setLocale(value)
+}
+
+function toggleTheme() {
+  themeStore.toggleTheme()
+}
+
+const currentTime = ref('')
+let timeInterval: ReturnType<typeof setInterval> | null = null
+
+function updateCurrentTime() {
+  currentTime.value = DateTime.now().setZone(appStore.timeZone).toFormat('yyyy-MM-dd HH:mm:ss')
+}
+
+watch(() => appStore.timeZone, updateCurrentTime)
+
+/** 觸控裝置：點擊切換 .show（桌面仍以 hover 為主，與 acs 一致） */
+const touchOpenMenu = ref<'tz' | 'lang' | null>(null)
+
+function onTzTriggerClick() {
+  touchOpenMenu.value = touchOpenMenu.value === 'tz' ? null : 'tz'
+}
+
+function onLangTriggerClick() {
+  touchOpenMenu.value = touchOpenMenu.value === 'lang' ? null : 'lang'
+}
+
+function onDocumentPointerDown(event: PointerEvent) {
+  if (!touchOpenMenu.value) return
+  const target = event.target
+  if (!(target instanceof Node)) return
+  const tzRoot = document.getElementById('timezoneDropdown')?.closest('.header-dropdown')
+  const langRoot = document.getElementById('languageDropdown')?.closest('.header-dropdown')
+  if (touchOpenMenu.value === 'tz' && tzRoot && !tzRoot.contains(target)) {
+    touchOpenMenu.value = null
+  }
+  if (touchOpenMenu.value === 'lang' && langRoot && !langRoot.contains(target)) {
+    touchOpenMenu.value = null
+  }
+}
+
+onMounted(() => {
+  updateCurrentTime()
+  timeInterval = setInterval(updateCurrentTime, 1000)
+  document.addEventListener('pointerdown', onDocumentPointerDown)
+})
+
+onUnmounted(() => {
+  if (timeInterval !== null) {
+    clearInterval(timeInterval)
+  }
+  document.removeEventListener('pointerdown', onDocumentPointerDown)
+})
 </script>
 
 <template>
-  <div class="flex-none flex items-center gap-1 sm:gap-2 min-w-0">
-    <div class="hidden md:flex items-center gap-2">
-      <div
-        class="hidden xl:flex items-center gap-2 px-3 py-1 bg-base-200 rounded-lg text-xs font-mono"
-      >
-        <span class="text-base-content/60">{{ t('store.timezone.currentTime') }}:</span>
-        <span class="font-semibold">{{ currentTime }}</span>
-      </div>
-      <div class="dropdown dropdown-end header-dropdown header-tz-dropdown">
-        <label tabindex="0" class="header-btn-label" :title="t('timezone.select')">
+  <ul class="header-nav header-actions">
+    <li class="nav-item">
+      <div class="header-dropdown header-tz-dropdown" :class="{ show: touchOpenMenu === 'tz' }">
+        <button
+          id="timezoneDropdown"
+          type="button"
+          class="header-btn-label"
+          aria-haspopup="true"
+          :aria-expanded="touchOpenMenu === 'tz'"
+          :title="currentTimezoneLabel"
+          @click="onTzTriggerClick"
+        >
           <span class="header-tz-btn-inner">
-            <Clock class="header-action-icon" :size="18" />
+            <Clock class="header-action-icon" :size="20" />
             <span class="tz-offset">{{ currentTimezoneOffset }}</span>
             <span class="tz-sep">|</span>
-            <span class="tz-zone">{{ currentTimezoneName }}</span>
+            <span class="tz-zone">
+              <span class="tz-zone-text">{{ currentTimezoneName }}</span>
+              <span
+                v-if="observesDST(appStore.timeZone)"
+                :title="isDSTNow(appStore.timeZone) ? t('timezone.dst') : t('timezone.st')"
+              >
+                <Sun
+                  v-if="isDSTNow(appStore.timeZone)"
+                  class="tz-dst-icon tz-dst-icon--summer"
+                  :size="13"
+                />
+                <Snowflake v-else class="tz-dst-icon tz-dst-icon--winter" :size="13" />
+              </span>
+            </span>
           </span>
           <ChevronDown class="header-btn-chevron" :size="14" />
-        </label>
+        </button>
         <ul
-          tabindex="0"
-          class="header-dropdown-menu dropdown-content z-[1] mt-2 w-[280px] rounded-box border border-base-300 bg-base-100 p-2 shadow"
+          class="header-dropdown-menu header-dropdown-menu-scroll dropdown-menu-end"
+          aria-labelledby="timezoneDropdown"
         >
           <li>
-            <a href="#" class="header-dropdown-item" @click.prevent="resetToSystemTimezone">
+            <a
+              href="#"
+              class="header-dropdown-item header-tz-reset-item"
+              @click.prevent="resetToSystemTimezone"
+            >
               <span class="header-tz-item">
-                <RotateCcw class="tz-check tz-check--active" :size="16" />
+                <RotateCcw class="tz-check" :size="18" />
                 <span class="tz-offset">{{ systemTimezoneOffset }}</span>
                 <span class="tz-sep">|</span>
                 <span class="tz-zone">
-                  {{ systemTimeZone }}
-                  <span v-if="observesDST(systemTimeZone)">
+                  <span class="tz-zone-text">{{ systemTimeZone }}</span>
+                  <span
+                    v-if="observesDST(systemTimeZone)"
+                    :title="isDSTNow(systemTimeZone) ? t('timezone.dst') : t('timezone.st')"
+                  >
                     <Sun
                       v-if="isDSTNow(systemTimeZone)"
                       class="tz-dst-icon tz-dst-icon--summer"
-                      :size="12"
+                      :size="13"
                     />
-                    <Snowflake v-else class="tz-dst-icon tz-dst-icon--winter" :size="12" />
+                    <Snowflake v-else class="tz-dst-icon tz-dst-icon--winter" :size="13" />
                   </span>
                 </span>
               </span>
@@ -121,27 +193,32 @@ function resetToSystemTimezone() {
             <a
               href="#"
               class="header-dropdown-item"
-              :class="{ active: option.value === currentTimeZone }"
-              @click.prevent="currentTimeZone = option.value"
+              :class="{ active: option.value === appStore.timeZone }"
+              @click.prevent="handleChangeTimezone(option.value)"
             >
               <span class="header-tz-item">
                 <CircleCheck
-                  v-if="option.value === currentTimeZone"
+                  v-if="option.value === appStore.timeZone"
                   class="tz-check tz-check--active"
-                  :size="16"
+                  :size="18"
                 />
-                <Circle v-else class="tz-check" :size="16" />
+                <Circle v-else class="tz-check" :size="18" />
                 <span class="tz-offset">{{ option.label.split(' | ')[0] }}</span>
                 <span class="tz-sep">|</span>
                 <span class="tz-zone">
-                  {{ option.label.split(' | ')[1] ?? option.label }}
-                  <span v-if="observesDST(option.value)">
+                  <span class="tz-zone-text">{{
+                    option.label.split(' | ')[1] ?? option.label
+                  }}</span>
+                  <span
+                    v-if="observesDST(option.value)"
+                    :title="isDSTNow(option.value) ? t('timezone.dst') : t('timezone.st')"
+                  >
                     <Sun
                       v-if="isDSTNow(option.value)"
                       class="tz-dst-icon tz-dst-icon--summer"
-                      :size="12"
+                      :size="13"
                     />
-                    <Snowflake v-else class="tz-dst-icon tz-dst-icon--winter" :size="12" />
+                    <Snowflake v-else class="tz-dst-icon tz-dst-icon--winter" :size="13" />
                   </span>
                 </span>
               </span>
@@ -149,188 +226,67 @@ function resetToSystemTimezone() {
           </li>
         </ul>
       </div>
-      <select
-        v-model="currentTheme"
-        class="select select-bordered select-sm h-8 text-xs w-[130px] lg:w-[150px]"
-        :title="t('theme.select')"
-      >
-        <option v-for="theme in availableThemes" :key="theme" :value="theme">
-          {{ t(`theme.${theme}`) || theme }}
-        </option>
-      </select>
-      <select
-        v-model="currentLocale"
-        class="select select-bordered select-sm h-8 text-xs w-[110px] lg:w-[120px]"
-        :title="t('language.select')"
-      >
-        <option value="zh_TW">{{ t('language.zh_TW') }}</option>
-        <option value="en_US">{{ t('language.en_US') }}</option>
-      </select>
-    </div>
+    </li>
 
-    <div class="dropdown dropdown-end md:hidden">
-      <label tabindex="0" class="btn btn-ghost btn-sm btn-square" :title="t('layout.mode')">
-        <PanelLeft class="h-5 w-5" />
-      </label>
-      <ul
-        tabindex="0"
-        class="mt-3 z-[1] p-3 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-72 border border-base-200 gap-2"
+    <li class="nav-item header-time-item">
+      <div
+        class="header-time-display"
+        :title="`${t('store.timezone.currentTime')}: ${currentTime}`"
+        aria-live="polite"
       >
-        <li class="menu-title px-1 py-0">
-          <span>{{ t('layout.mode') }}</span>
-        </li>
-        <li class="px-1 text-xs text-base-content/70">
-          {{ t('store.timezone.currentTime') }}: {{ currentTime }}
-        </li>
-        <li>
-          <div class="px-1 pb-1 text-[11px] text-base-content/60">{{ t('timezone.select') }}</div>
-          <select
-            v-model="currentTimeZone"
-            class="select select-bordered select-sm w-full"
-            :title="t('timezone.select')"
-          >
-            <option v-for="tz in timezoneList" :key="tz.value" :value="tz.value">
-              {{ tz.label }}
-            </option>
-          </select>
-        </li>
-        <li>
-          <div class="px-1 pb-1 text-[11px] text-base-content/60">{{ t('theme.select') }}</div>
-          <select
-            v-model="currentTheme"
-            class="select select-bordered select-sm w-full"
-            :title="t('theme.select')"
-          >
-            <option v-for="theme in availableThemes" :key="theme" :value="theme">
-              {{ t(`theme.${theme}`) || theme }}
-            </option>
-          </select>
-        </li>
-        <li>
-          <div class="px-1 pb-1 text-[11px] text-base-content/60">{{ t('language.select') }}</div>
-          <select
-            v-model="currentLocale"
-            class="select select-bordered select-sm w-full"
-            :title="t('language.select')"
-          >
-            <option value="zh_TW">{{ t('language.zh_TW') }}</option>
-            <option value="en_US">{{ t('language.en_US') }}</option>
-          </select>
-        </li>
-      </ul>
-    </div>
-  </div>
+        <CalendarClock class="header-action-icon header-time-icon" :size="18" />
+        <time class="header-time-text" :datetime="currentTime">{{ currentTime }}</time>
+      </div>
+    </li>
+
+    <li class="nav-item">
+      <button
+        type="button"
+        class="header-theme-switch-btn"
+        role="switch"
+        :aria-checked="isDarkMode"
+        :title="isDarkMode ? t('theme.brainwave-dark') : t('theme.brainwave')"
+        @click="toggleTheme"
+      >
+        <span class="header-theme-switch-thumb" :class="{ 'is-dark': isDarkMode }">
+          <Moon v-if="isDarkMode" class="header-theme-icon header-theme-icon--moon" :size="16" />
+          <Sun v-else class="header-theme-icon header-theme-icon--sun" :size="16" />
+        </span>
+      </button>
+    </li>
+
+    <li class="nav-item">
+      <div class="header-dropdown header-lang-dropdown" :class="{ show: touchOpenMenu === 'lang' }">
+        <button
+          id="languageDropdown"
+          type="button"
+          class="header-btn-circle"
+          aria-haspopup="true"
+          :aria-expanded="touchOpenMenu === 'lang'"
+          :title="langStr"
+          @click="onLangTriggerClick"
+        >
+          <Globe class="header-action-icon" :size="20" />
+        </button>
+        <ul class="header-dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+          <li v-for="option in langOptions" :key="option.value">
+            <a
+              href="#"
+              class="header-dropdown-item header-select-item"
+              :class="{ active: option.value === i18nLocale }"
+              @click.prevent="handleChangeLanguage(option.value)"
+            >
+              <CircleCheck
+                v-if="option.value === i18nLocale"
+                class="tz-check tz-check--active"
+                :size="18"
+              />
+              <Circle v-else class="tz-check" :size="18" />
+              <span>{{ option.label }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
 </template>
-
-<style scoped>
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.header-btn-label {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  min-height: 2.125rem;
-  padding: 0 0.5rem 0 0.75rem;
-  border: 0;
-  border-radius: 9999px;
-  background: color-mix(in srgb, var(--color-base-300) 55%, transparent);
-  color: color-mix(in srgb, var(--color-base-content) 72%, transparent);
-  cursor: pointer;
-}
-
-.header-btn-label:hover {
-  color: var(--color-base-content);
-  background: color-mix(in srgb, var(--color-base-300) 80%, transparent);
-}
-
-.header-tz-dropdown {
-  width: 280px;
-}
-
-.header-tz-btn-inner {
-  display: grid;
-  grid-template-columns: 20px 54px 14px 1fr;
-  align-items: center;
-  width: 100%;
-  font-size: 12px;
-}
-
-.header-action-icon {
-  opacity: 0.85;
-}
-
-.header-btn-chevron {
-  margin-left: 0.375rem;
-  opacity: 0.7;
-  transition: transform 0.2s ease;
-}
-
-.header-tz-dropdown:hover .header-btn-chevron {
-  transform: rotate(180deg);
-}
-
-.header-dropdown-item {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  border-radius: 0.5rem;
-  padding: 0.375rem 0.5rem;
-  font-size: 12px;
-  color: color-mix(in srgb, var(--color-base-content) 78%, transparent);
-}
-
-.header-dropdown-item:hover {
-  background: color-mix(in srgb, var(--color-base-300) 70%, transparent);
-}
-
-.header-dropdown-item.active {
-  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
-  color: var(--color-primary);
-}
-
-.header-tz-item {
-  display: grid;
-  width: 100%;
-  grid-template-columns: 20px 54px 14px 1fr;
-  align-items: center;
-}
-
-.tz-check {
-  opacity: 0.45;
-}
-
-.tz-check--active {
-  opacity: 1;
-}
-
-.tz-offset {
-  padding-left: 4px;
-}
-
-.tz-sep {
-  text-align: center;
-  opacity: 0.6;
-}
-
-.tz-zone {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.tz-dst-icon {
-  opacity: 0.8;
-}
-
-.tz-dst-icon--summer {
-  color: #d49400;
-}
-
-.tz-dst-icon--winter {
-  color: #4a90d9;
-}
-</style>

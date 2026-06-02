@@ -51,6 +51,40 @@ describe('buildTestDataDocument', () => {
     expect(fullIndex).toBe('acs-transaction-2024-06-15')
   })
 
+  it('有 Visa Score 時寫入 riskAssesmentResult（等於 ares_transStatus）', () => {
+    const form = getFormDataFromState({
+      mode: 'acs',
+      aresTransStatus: 'C',
+      transStatus: 'C',
+      visaRiskBasedAuthenticationScore: '85',
+      enableMastercardExtension: false
+    })
+    const { document } = buildTestDataDocument(form, 'acs-transaction')
+    expect(document.riskAssesmentResult).toBe('C')
+  })
+
+  it('啟用 Mastercard 擴展時寫入 riskAssesmentResult', () => {
+    const form = getFormDataFromState({
+      mode: 'acs',
+      aresTransStatus: 'Y',
+      transStatus: 'Y',
+      enableMastercardExtension: true
+    })
+    const { document } = buildTestDataDocument(form, 'acs-transaction')
+    expect(document.riskAssesmentResult).toBe('Y')
+  })
+
+  it('無 Visa／Mastercard Score 時不寫入 riskAssesmentResult', () => {
+    const form = getFormDataFromState({
+      mode: 'acs',
+      aresTransStatus: 'Y',
+      transStatus: 'Y',
+      enableMastercardExtension: false
+    })
+    const { document } = buildTestDataDocument(form, 'acs-transaction')
+    expect(document.riskAssesmentResult).toBeUndefined()
+  })
+
   it('預設附加 browserGeoIP 與 deviceGeoIP', () => {
     const form = getFormDataFromState({
       mode: 'acs',

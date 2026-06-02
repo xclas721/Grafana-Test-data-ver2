@@ -308,6 +308,9 @@ const zh_TW = {
 
   // ===== 時區選擇 =====
   'timezone.select': '選擇時區',
+  'timezone.dst': '夏令時間',
+  'timezone.st': '標準時間',
+  'timezone.reset': '重設為系統時區',
 
   // ===== 使用者管理 =====
   'user.subtitle': '管理系統使用者資訊',

@@ -18,8 +18,8 @@ export const useThemeStore = defineStore('theme', () => {
   function setTheme(theme: string) {
     if (isAppTheme(theme)) {
       currentTheme.value = theme
-      // 更新 HTML 的 data-theme 屬性
       document.documentElement.setAttribute('data-theme', theme)
+      document.documentElement.style.colorScheme = theme === 'brainwave-dark' ? 'dark' : 'light'
     }
   }
 
@@ -43,11 +43,21 @@ export const useThemeStore = defineStore('theme', () => {
     setTheme(availableThemes[nextIndex] || 'brainwave')
   }
 
+  function isDarkMode(): boolean {
+    return currentTheme.value === 'brainwave-dark'
+  }
+
+  function toggleTheme() {
+    setTheme(isDarkMode() ? 'brainwave' : 'brainwave-dark')
+  }
+
   return {
     availableThemes,
     currentTheme,
     setTheme,
     initTheme,
-    nextTheme
+    nextTheme,
+    isDarkMode,
+    toggleTheme
   }
 })

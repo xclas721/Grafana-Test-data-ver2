@@ -26,6 +26,7 @@ describe('theme store', () => {
       await nextTick()
       expect(unref(s.currentTheme as unknown as Ref<string>)).toBe('brainwave-dark')
       expect(document.documentElement.getAttribute('data-theme')).toBe('brainwave-dark')
+      expect(document.documentElement.style.colorScheme).toBe('dark')
       const raw = localStorage.getItem('theme')
       expect(raw === 'brainwave-dark' || raw === JSON.stringify('brainwave-dark')).toBe(true)
     })
@@ -47,6 +48,19 @@ describe('theme store', () => {
       await nextTick()
       expect(unref(s.currentTheme as unknown as Ref<string>)).toBe('brainwave')
       expect(document.documentElement.getAttribute('data-theme')).toBe('brainwave')
+    })
+  })
+
+  describe('toggleTheme', () => {
+    it('應在 brainwave 與 brainwave-dark 之間切換', async () => {
+      const s = useThemeStore()
+      s.setTheme('brainwave')
+      s.toggleTheme()
+      await nextTick()
+      expect(unref(s.currentTheme as unknown as Ref<string>)).toBe('brainwave-dark')
+      s.toggleTheme()
+      await nextTick()
+      expect(unref(s.currentTheme as unknown as Ref<string>)).toBe('brainwave')
     })
   })
 

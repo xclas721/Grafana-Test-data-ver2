@@ -186,6 +186,16 @@ export function buildTestDataDocument(
     doc.mastercardMessageExtension = null
   }
 
+  // riskAssesmentResult：風險評估快照（等於 ares_transStatus，之後不再更新）
+  // 只有有 Visa Score 或 Mastercard Score 的交易才寫入，對應 Grafana panel 的 filter 條件
+  const hasVisaScore =
+    Boolean(form.visaRiskBasedAuthenticationScore) &&
+    String(form.visaRiskBasedAuthenticationScore).trim() !== ''
+  const hasMastercardScore = form.enableMastercardExtension === 'on'
+  if (hasVisaScore || hasMastercardScore) {
+    doc.riskAssesmentResult = form.aresTransStatus
+  }
+
   attachGeoIpToDocument(doc, form)
 
   return { document: doc, indexBase, fullIndex, utcDateStr }

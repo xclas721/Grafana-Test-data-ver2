@@ -1,0 +1,202 @@
+/**
+ * 全站 DaisyUI 按鈕樣式（頁面操作、表單、Modal 等；不含頂欄 header-controls）
+ */
+
+[data-theme='brainwave'] {
+  --app-btn-shadow: 0 1px 2px rgba(15, 23, 42, 0.07);
+  --app-btn-hover-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary) 16%, transparent);
+  --app-btn-solid-hover-filter: brightness(0.96);
+}
+
+[data-theme='brainwave-dark'] {
+  --app-btn-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+  --app-btn-hover-shadow: 0 2px 10px color-mix(in srgb, var(--color-primary) 22%, transparent);
+  --app-btn-solid-hover-filter: brightness(1.08);
+}
+
+/* 一般文字按鈕（排除圓形／方塊圖示鈕） */
+.btn:not(.btn-circle):not(.btn-square) {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-radius: 0.5rem;
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    color 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.12s ease,
+    filter 0.16s ease;
+}
+
+.btn:not(.btn-circle):not(.btn-square):not(.btn-link):not(.btn-ghost) {
+  box-shadow: var(--app-btn-shadow);
+}
+
+.btn:not(.btn-circle):not(.btn-square):not(:disabled):not([disabled]):active {
+  transform: scale(0.98);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--app-header-focus-ring);
+  outline-offset: 2px;
+}
+
+/* 實心按鈕 */
+.btn-primary:not(.btn-outline),
+.btn-secondary:not(.btn-outline),
+.btn-accent:not(.btn-outline),
+.btn-info:not(.btn-outline),
+.btn-success:not(.btn-outline),
+.btn-warning:not(.btn-outline),
+.btn-error:not(.btn-outline),
+.btn-neutral:not(.btn-outline) {
+  border-width: 1px;
+  border-color: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.btn-primary:not(.btn-outline):not(:disabled):not([disabled]):hover,
+.btn-secondary:not(.btn-outline):not(:disabled):not([disabled]):hover,
+.btn-accent:not(.btn-outline):not(:disabled):not([disabled]):hover,
+.btn-info:not(.btn-outline):not(:disabled):not([disabled]):hover,
+.btn-success:not(.btn-outline):not(:disabled):not([disabled]):hover,
+.btn-warning:not(.btn-outline):not(:disabled):not([disabled]):hover,
+.btn-error:not(.btn-outline):not(:disabled):not([disabled]):hover,
+.btn-neutral:not(.btn-outline):not(:disabled):not([disabled]):hover {
+  filter: var(--app-btn-solid-hover-filter);
+  box-shadow: var(--app-btn-hover-shadow);
+}
+
+/* 外框按鈕 */
+.btn-outline.btn-primary,
+.btn-outline.btn-secondary,
+.btn-outline.btn-info,
+.btn-outline.btn-success,
+.btn-outline.btn-warning,
+.btn-outline.btn-error,
+.btn-outline.btn-neutral {
+  border-width: 1.5px;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.btn-outline.btn-primary:not(:disabled):not([disabled]):hover {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-content);
+  box-shadow: var(--app-btn-hover-shadow);
+}
+
+.btn-outline.btn-info:not(:disabled):not([disabled]):hover {
+  background-color: var(--color-info);
+  border-color: var(--color-info);
+  color: var(--color-info-content);
+}
+
+.btn-outline.btn-success:not(:disabled):not([disabled]):hover {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+  color: var(--color-success-content);
+}
+
+.btn-outline.btn-warning:not(:disabled):not([disabled]):hover {
+  background-color: var(--color-warning);
+  border-color: var(--color-warning);
+  color: var(--color-warning-content);
+}
+
+.btn-outline.btn-error:not(:disabled):not([disabled]):hover {
+  background-color: var(--color-error);
+  border-color: var(--color-error);
+  color: var(--color-error-content);
+}
+
+/* 僅 btn-outline、未指定色（舊用法）→ 當 primary outline */
+.btn-outline:not(.btn-primary):not(.btn-secondary):not(.btn-info):not(.btn-success):not(
+    .btn-warning
+  ):not(.btn-error):not(.btn-neutral) {
+  border-width: 1.5px;
+  color: var(--color-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 55%, var(--color-base-300));
+  background-color: transparent;
+}
+
+.btn-outline:not(.btn-primary):not(.btn-secondary):not(.btn-info):not(.btn-success):not(
+    .btn-warning
+  ):not(.btn-error):not(.btn-neutral):not(:disabled):not([disabled]):hover {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-content);
+}
+
+/* Ghost / Link */
+.btn-ghost:not(:disabled):not([disabled]):hover {
+  background: color-mix(in srgb, var(--color-base-300) 65%, var(--color-primary) 8%);
+  color: var(--color-base-content);
+}
+
+.btn-link {
+  text-underline-offset: 3px;
+}
+
+.btn-link:not(:disabled):not([disabled]):hover {
+  text-decoration-thickness: 2px;
+}
+
+/* 停用 */
+.btn:disabled,
+.btn[disabled],
+.btn-disabled {
+  opacity: 0.52;
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+  cursor: not-allowed;
+}
+
+/* 尺寸與觸控目標 */
+.btn-xs:not(.btn-circle):not(.btn-square) {
+  min-height: 1.75rem;
+  padding-inline: 0.625rem;
+  font-size: 0.75rem;
+}
+
+.btn-sm:not(.btn-circle):not(.btn-square) {
+  min-height: 2rem;
+  padding-inline: 0.875rem;
+  font-size: 0.8125rem;
+}
+
+.btn-lg:not(.btn-circle):not(.btn-square) {
+  min-height: 2.75rem;
+  padding-inline: 1.25rem;
+  font-size: 1rem;
+}
+
+/* 共用 Button 元件 */
+.app-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  vertical-align: middle;
+}
+
+.app-btn .loading {
+  width: 1rem;
+  height: 1rem;
+}
+
+.app-btn--loading {
+  pointer-events: none;
+}
+
+/* Modal 關閉鈕維持輕量 */
+.btn-circle.btn-ghost,
+.btn-square.btn-ghost {
+  box-shadow: none;
+}
+
+.btn-circle.btn-ghost:hover,
+.btn-square.btn-ghost:hover {
+  background: color-mix(in srgb, var(--color-base-300) 70%, transparent);
+}

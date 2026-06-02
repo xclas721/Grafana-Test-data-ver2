@@ -100,9 +100,7 @@ const {
       {{ statusMessage }}
     </div>
 
-    <div
-      class="sticky top-16 z-10 mb-6 rounded-lg border border-base-300 bg-base-100/95 backdrop-blur shadow-sm"
-    >
+    <div class="app-sticky-toolbar sticky top-16 z-10 mb-6 rounded-lg border backdrop-blur">
       <div class="px-4 py-3 border-b border-base-300/80">
         <div class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between xl:gap-6">
           <div class="min-w-0 flex-1">
@@ -210,7 +208,7 @@ const {
     </div>
 
     <div class="mb-6 grid grid-cols-1 xl:grid-cols-2 gap-6">
-      <div class="card bg-base-100 border border-base-200 shadow-sm">
+      <div class="app-form-card card bg-base-100 border border-base-300/80 shadow-sm">
         <div class="card-body">
           <h3 class="font-semibold text-base">單筆文件 JSON</h3>
           <pre
@@ -219,7 +217,7 @@ const {
           >
         </div>
       </div>
-      <div class="card bg-base-100 border border-base-200 shadow-sm">
+      <div class="app-form-card card bg-base-100 border border-base-300/80 shadow-sm">
         <div class="card-body">
           <h3 class="font-semibold text-base">批次預覽 JSON</h3>
           <p class="text-xs text-base-content/60 mt-1">

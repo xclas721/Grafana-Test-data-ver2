@@ -28,15 +28,10 @@ onUnmounted(() => {
 <template>
   <div
     ref="containerRef"
-    class="absolute inset-0 pointer-events-none z-0"
+    class="app-mouse-gradient absolute inset-0 pointer-events-none z-0"
     :style="{
-      background: `radial-gradient(
-        circle 1200px at ${mouseX}% ${mouseY}%,
-        rgba(139, 92, 246, 0.25) 0%,
-        rgba(59, 130, 246, 0.15) 35%,
-        rgba(6, 182, 212, 0.08) 65%,
-        transparent 100%
-      )`
+      '--mouse-x': `${mouseX}%`,
+      '--mouse-y': `${mouseY}%`
     }"
-  ></div>
+  />
 </template>

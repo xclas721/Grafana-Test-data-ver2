@@ -7,7 +7,7 @@ defineProps<{
 
 <template>
   <div
-    class="card bg-base-100/60 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 border border-base-200/50"
+    class="app-form-card card bg-base-100 border border-base-300/80 backdrop-blur-sm transition-shadow duration-300 hover:shadow-md"
   >
     <div class="card-body p-6">
       <div v-if="title || subtitle" class="mb-4">

@@ -16,14 +16,14 @@
           <RouterLink
             v-if="!item.children"
             :to="item.path!"
-            class="nav-link flex items-center gap-2 py-2.5 px-3 no-underline text-inherit hover:bg-black/5 rounded-lg transition-colors min-w-0"
+            class="nav-link flex items-center gap-2 py-2.5 px-3 no-underline text-inherit rounded-lg transition-colors min-w-0"
           >
             <component :is="item.icon" class="w-5 h-5 shrink-0" aria-hidden="true" />
             <span class="min-w-0 truncate">{{ t(item.i18nCode) }}</span>
           </RouterLink>
           <template v-else>
             <a
-              class="flex items-center gap-2 py-2.5 px-3 no-underline text-inherit hover:bg-black/5 rounded-lg cursor-pointer min-w-0"
+              class="flex items-center gap-2 py-2.5 px-3 no-underline text-inherit rounded-lg cursor-pointer min-w-0"
               @click="toggleCollapse(item)"
             >
               <component :is="item.icon" class="w-5 h-5 shrink-0" aria-hidden="true" />
@@ -41,7 +41,7 @@
                 <li
                   v-for="child in item.children"
                   :key="child.id"
-                  class="nav-item relative transition-[background,transform] duration-200 hover:bg-black/5 hover:translate-x-1.5 min-w-0"
+                  class="nav-item relative transition-[background,transform] duration-200 hover:translate-x-1.5 min-w-0"
                 >
                   <RouterLink
                     :to="child.path"

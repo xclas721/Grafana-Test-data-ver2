@@ -7,11 +7,12 @@ const mockLocale = vi.hoisted(() => {
   return ref<'zh_TW' | 'en_US'>('zh_TW')
 })
 
-vi.mock('vue-i18n', () => ({
-  useI18n: () => ({
-    locale: mockLocale,
-    t: (k: string) => k
-  })
+vi.mock('@/locales', () => ({
+  default: {
+    global: {
+      locale: mockLocale
+    }
+  }
 }))
 
 import { useI18nStore } from '@/stores/i18n'

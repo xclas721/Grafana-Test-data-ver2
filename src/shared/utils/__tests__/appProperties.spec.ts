@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import * as appProperties from '@/shared/utils/appProperties'
 
 /**
@@ -66,32 +66,47 @@ describe('appProperties', () => {
     })
   })
 
+  describe('IANA_TIMEZONE_VALUES', () => {
+    it('應與 acs 相同為 38 個 IANA 時區', () => {
+      expect(appProperties.IANA_TIMEZONE_VALUES).toHaveLength(38)
+      expect(appProperties.IANA_TIMEZONE_VALUES[0]).toBe('Pacific/Pago_Pago')
+      expect(appProperties.IANA_TIMEZONE_VALUES.at(-1)).toBe('Pacific/Kiritimati')
+    })
+  })
+
   describe('getTimezoneList', () => {
-    beforeEach(() => {
-      vi.spyOn(appProperties, 'getBrowserTimeZone').mockReturnValue('Asia/Taipei')
-    })
-
-    afterEach(() => {
-      vi.restoreAllMocks()
-    })
-
-    it('無 current 時應含瀏覽器選項並排除重複 Taipei', () => {
+    it('應回傳完整 IANA 列表且標籤含 UTC 偏移', () => {
       const list = appProperties.getTimezoneList()
-      const values = list.map((o) => o.value)
-      expect(values[0]).toBe('Asia/Taipei')
-      expect(values.filter((v) => v === 'Asia/Taipei').length).toBe(1)
-      expect(list[0].label).toContain('Auto')
-    })
-
-    it('current 無效時應與無參數類似處理', () => {
-      const list = appProperties.getTimezoneList('   ')
-      expect(list[0].value).toBe('Asia/Taipei')
+      expect(list).toHaveLength(38)
+      expect(list.some((o) => o.value === 'Asia/Taipei')).toBe(true)
+      expect(list.find((o) => o.value === 'Asia/Tokyo')?.label).toMatch(/^UTC\+9 \| Asia\/Tokyo$/)
     })
 
     it('有效但不在預設清單的時區應插入 Custom TZ', () => {
-      const list = appProperties.getTimezoneList('Europe/Paris')
+      const list = appProperties.getTimezoneList('Europe/Berlin')
       const custom = list.find((o) => o.label.startsWith('Custom TZ:'))
-      expect(custom?.value).toBe('Europe/Paris')
+      expect(custom?.value).toBe('Europe/Berlin')
+      expect(list).toHaveLength(39)
+    })
+  })
+
+  describe('getTestDataTimezoneOptions', () => {
+    it('應含 browser 與 38 個 IANA 時區', () => {
+      const list = appProperties.getTestDataTimezoneOptions()
+      expect(list[0]).toEqual({ value: 'browser', label: '瀏覽器時區 (自動檢測)' })
+      expect(list).toHaveLength(39)
+    })
+  })
+
+  describe('getTimezoneDisplayName', () => {
+    it('browser 應回瀏覽器時區文案', () => {
+      expect(appProperties.getTimezoneDisplayName('browser')).toBe('瀏覽器時區 (自動檢測)')
+    })
+
+    it('IANA 時區應回 formatTimezoneLabel 格式', () => {
+      expect(appProperties.getTimezoneDisplayName('Asia/Taipei')).toMatch(
+        /^UTC\+8 \| Asia\/Taipei$/
+      )
     })
   })
 })

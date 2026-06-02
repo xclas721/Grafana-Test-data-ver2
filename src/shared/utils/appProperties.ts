@@ -60,7 +60,8 @@ export function getLocaleLabel(localeValue: string): string {
   return returnLocale ? returnLocale.label : 'English'
 }
 
-const zoneValues = [
+/** 與 acs-admin-frontend 一致：UTC-11 ~ UTC+14 每個整點至少一個 IANA 代表時區 */
+export const IANA_TIMEZONE_VALUES = [
   'Pacific/Pago_Pago',
   'Pacific/Honolulu',
   'Pacific/Gambier',
@@ -101,7 +102,7 @@ const zoneValues = [
   'Pacific/Kiritimati'
 ] as const
 
-const essentialTimezones: string[] = [...zoneValues]
+const essentialTimezones: string[] = [...IANA_TIMEZONE_VALUES]
 
 const formatOffset = (offsetMinutes: number): string => {
   const sign = offsetMinutes >= 0 ? '+' : '-'
@@ -131,6 +132,9 @@ export function getBrowserTimeZone(): string {
   }
 }
 
+/**
+ * 頂欄／Store 用時區清單（IANA 完整列表，與 acs HeaderControls 相同）
+ */
 export function getTimezoneList(currentTimezone?: string): TimezoneOption[] {
   const list = essentialTimezones.map((item) => ({
     value: item,
@@ -139,8 +143,31 @@ export function getTimezoneList(currentTimezone?: string): TimezoneOption[] {
 
   const selected = currentTimezone?.trim()
   if (selected && isValidTimezone(selected) && !list.some((item) => item.value === selected)) {
-    list.unshift({ value: selected, label: formatTimezoneLabel(selected) })
+    list.unshift({
+      value: selected,
+      label: `Custom TZ: ${formatTimezoneLabel(selected)}`
+    })
   }
 
   return list
+}
+
+/**
+ * Test Data 表單「時區 (timezone)」下拉：瀏覽器自動 + 完整 IANA 列表
+ */
+export function getTestDataTimezoneOptions(): TimezoneOption[] {
+  return [
+    { value: 'browser', label: '瀏覽器時區 (自動檢測)' },
+    ...essentialTimezones.map((item) => ({
+      value: item,
+      label: formatTimezoneLabel(item)
+    }))
+  ]
+}
+
+/** 時間區間說明用顯示名稱 */
+export function getTimezoneDisplayName(timezone: string): string {
+  if (timezone === 'browser') return '瀏覽器時區 (自動檢測)'
+  if (isValidTimezone(timezone)) return formatTimezoneLabel(timezone)
+  return timezone
 }

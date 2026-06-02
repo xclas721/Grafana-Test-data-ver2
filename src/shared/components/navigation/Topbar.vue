@@ -1,34 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Menu } from 'lucide-vue-next'
-import { useAppStore } from '@/stores/app'
-import { DateTime } from 'luxon'
 import { Button, TopbarControls } from '@/shared/components'
 
 const router = useRouter()
-const appStore = useAppStore()
-
-const currentTime = ref('')
-let timeInterval: number | null = null
-const updateCurrentTime = () => {
-  currentTime.value = DateTime.now().setZone(appStore.timeZone).toFormat('yyyy-MM-dd HH:mm:ss')
-}
 
 const goDashboard = () => {
   void router.push('/test-data/input')
 }
-
-onMounted(() => {
-  updateCurrentTime()
-  timeInterval = window.setInterval(updateCurrentTime, 1000)
-})
-
-onUnmounted(() => {
-  if (timeInterval !== null) {
-    clearInterval(timeInterval)
-  }
-})
 </script>
 
 <template>
@@ -42,7 +21,7 @@ onUnmounted(() => {
       </RouterLink>
     </div>
     <nav class="flex-none flex items-center gap-2">
-      <TopbarControls :current-time="currentTime" />
+      <TopbarControls />
       <div class="dropdown dropdown-end sm:hidden">
         <label tabindex="0" class="btn btn-ghost btn-sm btn-square">
           <Menu class="w-5 h-5" />

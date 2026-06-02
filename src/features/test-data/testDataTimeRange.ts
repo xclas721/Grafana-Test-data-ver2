@@ -1,4 +1,5 @@
 import type { TestDataFormMap } from '@/features/test-data/buildTestDataDocument'
+import { getTimezoneDisplayName } from '@/shared/utils/appProperties'
 
 export type TimeRangeFormSlice = {
   currentDate: string
@@ -143,22 +144,10 @@ export function buildTimeRangeHtml(form: TimeRangeFormSlice, batchDays: number):
   const timezone = form.timezone || 'browser'
   const useCustomRange = form.enableCustomTimeRange
 
-  const timezoneNames: Record<string, string> = {
-    browser: `瀏覽器時區 (${Intl.DateTimeFormat().resolvedOptions().timeZone})`,
-    'Asia/Taipei': '台灣 (UTC+8)',
-    'Asia/Shanghai': '中國 (UTC+8)',
-    'Asia/Tokyo': '日本 (UTC+9)',
-    'Asia/Seoul': '韓國 (UTC+9)',
-    'Asia/Singapore': '新加坡 (UTC+8)',
-    'Asia/Hong_Kong': '香港 (UTC+8)',
-    'America/New_York': '美國東部 (UTC-5/-4)',
-    'America/Los_Angeles': '美國西部 (UTC-8/-7)',
-    'Europe/London': '英國 (UTC+0/+1)',
-    'Europe/Paris': '法國 (UTC+1/+2)',
-    'Australia/Sydney': '澳洲東部 (UTC+10/+11)',
-    UTC: 'UTC (UTC+0)'
-  }
-  const tzName = timezoneNames[timezone] || timezone
+  const tzName =
+    timezone === 'browser'
+      ? `瀏覽器時區 (${Intl.DateTimeFormat().resolvedOptions().timeZone})`
+      : getTimezoneDisplayName(timezone)
 
   if (!currentDate && !useCustomRange) {
     return '請選擇日期'

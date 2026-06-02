@@ -313,6 +313,9 @@ const en_US = {
 
   // ===== Timezone Selection =====
   'timezone.select': 'Select Timezone',
+  'timezone.dst': 'Daylight saving time',
+  'timezone.st': 'Standard time',
+  'timezone.reset': 'Reset to system timezone',
 
   // ===== User Management =====
   'user.subtitle': 'Manage system user information',

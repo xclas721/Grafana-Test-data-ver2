@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Card, Input, Select, type SelectOption } from '@/shared/components'
+import { getTestDataTimezoneOptions } from '@/shared/utils/appProperties'
 
 const props = defineProps<{
   baseUrl: string
@@ -28,21 +30,12 @@ const emit = defineEmits<{
   'update:timezone': [value: string]
 }>()
 
-const timezoneOptions: SelectOption[] = [
-  { value: 'browser', label: '瀏覽器時區 (自動檢測)' },
-  { value: 'Asia/Taipei', label: '台灣 (UTC+8)' },
-  { value: 'Asia/Shanghai', label: '中國 (UTC+8)' },
-  { value: 'Asia/Tokyo', label: '日本 (UTC+9)' },
-  { value: 'Asia/Seoul', label: '韓國 (UTC+9)' },
-  { value: 'Asia/Singapore', label: '新加坡 (UTC+8)' },
-  { value: 'Asia/Hong_Kong', label: '香港 (UTC+8)' },
-  { value: 'America/New_York', label: '美國東部 (UTC-5/-4)' },
-  { value: 'America/Los_Angeles', label: '美國西部 (UTC-8/-7)' },
-  { value: 'Europe/London', label: '英國 (UTC+0/+1)' },
-  { value: 'Europe/Paris', label: '法國 (UTC+1/+2)' },
-  { value: 'Australia/Sydney', label: '澳洲東部 (UTC+10/+11)' },
-  { value: 'UTC', label: 'UTC (UTC+0)' }
-]
+const timezoneOptions = computed<SelectOption[]>(() =>
+  getTestDataTimezoneOptions().map((item) => ({
+    value: item.value,
+    label: item.label
+  }))
+)
 </script>
 
 <template>
