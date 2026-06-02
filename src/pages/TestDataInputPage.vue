@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { PageHeader, type SelectOption } from '@/shared/components'
 import CurrencyModal from '@/features/test-data/components/CurrencyModal.vue'
@@ -101,6 +101,12 @@ const {
 function onWriteModeChange(mode: 'manual' | 'scheduled') {
   onToggleScheduleEnabled(mode === 'scheduled')
 }
+
+// Node 進度優先；兩者都不顯示時退回瀏覽器直連的 progress
+const activeProgress = computed(() => (nodeProgress.visible ? nodeProgress : progress))
+const activeCloseProgress = computed(() =>
+  nodeProgress.visible ? closeNodeProgress : closeProgress
+)
 </script>
 
 <template>
@@ -362,33 +368,18 @@ function onWriteModeChange(mode: 'manual' | 'scheduled') {
     <CurrencyModal v-model="currencyModalVisible" @select="onCurrencySelect" />
 
     <BulkProgressPanel
-      :visible="progress.visible"
-      :finished="progress.finished"
-      :phase-label="progress.phaseLabel"
-      :summary="progress.summary"
-      :current="progress.current"
-      :total="progress.total"
-      :success="progress.success"
-      :error="progress.error"
-      :elapsed-sec="progress.elapsedSec"
-      :logs="progress.logs"
-      :errors="progress.errors"
-      @close="closeProgress"
-    />
-
-    <BulkProgressPanel
-      :visible="nodeProgress.visible"
-      :finished="nodeProgress.finished"
-      :phase-label="nodeProgress.phaseLabel"
-      :summary="nodeProgress.summary"
-      :current="nodeProgress.current"
-      :total="nodeProgress.total"
-      :success="nodeProgress.success"
-      :error="nodeProgress.error"
-      :elapsed-sec="nodeProgress.elapsedSec"
-      :logs="nodeProgress.logs"
-      :errors="nodeProgress.errors"
-      @close="closeNodeProgress"
+      :visible="activeProgress.visible"
+      :finished="activeProgress.finished"
+      :phase-label="activeProgress.phaseLabel"
+      :summary="activeProgress.summary"
+      :current="activeProgress.current"
+      :total="activeProgress.total"
+      :success="activeProgress.success"
+      :error="activeProgress.error"
+      :elapsed-sec="activeProgress.elapsedSec"
+      :logs="activeProgress.logs"
+      :errors="activeProgress.errors"
+      @close="activeCloseProgress()"
     />
   </div>
 </template>

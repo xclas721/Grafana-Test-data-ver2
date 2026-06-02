@@ -129,6 +129,7 @@ export function useNodeBackendInsert(formApi: TestDataFormApi) {
               total?: number
               durationMs?: number
               message?: string
+              metrics?: { success?: number; error?: number; count?: number }
             }
 
             if (event.type === 'progress') {
@@ -137,18 +138,29 @@ export function useNodeBackendInsert(formApi: TestDataFormApi) {
               progress.current = event.current ?? 0
               progress.total = event.total ?? total
             } else if (event.type === 'done') {
+              const finalSuccess = event.success ?? event.metrics?.success ?? progress.success
+              const finalError = event.error ?? event.metrics?.error ?? progress.error
+              const finalCurrent = event.current ?? finalSuccess + finalError
+              progress.success = finalSuccess
+              progress.error = finalError
+              progress.current = finalCurrent
+              progress.total = event.total ?? event.metrics?.count ?? total
+
               const durationMs = event.durationMs ?? 0
-              const speed = durationMs > 0 ? Math.round(progress.success / (durationMs / 1000)) : 0
+              const speed = durationMs > 0 ? Math.round(finalSuccess / (durationMs / 1000)) : 0
               progress.finished = true
               progress.phaseLabel = ''
               stopTimer()
+              const logType = finalError > 0 && finalSuccess === 0 ? 'error' : 'success'
               pushLog(
-                'success',
-                `完成 ${progress.success}/${total}，${durationMs}ms（${speed} 筆/s）`
+                logType,
+                `完成 ${finalSuccess}/${total}（失敗 ${finalError}），${durationMs}ms（${speed} 筆/s）`
               )
               formApi.setStatus(
-                `Node 完成：${progress.success} 筆，${durationMs}ms（${speed} 筆/s）`,
-                'success'
+                finalError > 0 && finalSuccess === 0
+                  ? `Node 插入失敗：0 筆成功，${finalError} 筆失敗`
+                  : `Node 完成：${finalSuccess} 筆，${durationMs}ms（${speed} 筆/s）`,
+                finalError > 0 && finalSuccess === 0 ? 'error' : 'success'
               )
             } else if (event.type === 'error') {
               throw new Error(event.message ?? '未知錯誤')

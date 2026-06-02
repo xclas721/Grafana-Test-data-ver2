@@ -36,6 +36,15 @@ const timezoneOptions = computed<SelectOption[]>(() =>
     label: item.label
   }))
 )
+
+const timeRangeText = computed(() => {
+  const raw = String(props.timeRangeHtml || '請選擇日期')
+  return raw
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/div>\s*<div>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .trim()
+})
 </script>
 
 <template>
@@ -132,8 +141,11 @@ const timezoneOptions = computed<SelectOption[]>(() =>
           <label class="label">
             <span class="label-text">UTC時間區間 (Time Range)</span>
           </label>
-          <div id="timeRangeDisplay" class="rounded-md bg-base-200 px-3 py-2 text-base-content/60">
-            <div v-html="props.timeRangeHtml || '請選擇日期'"></div>
+          <div
+            id="timeRangeDisplay"
+            class="rounded-md bg-base-200 px-3 py-2 text-base-content/60 whitespace-pre-line"
+          >
+            {{ timeRangeText }}
           </div>
         </div>
       </div>

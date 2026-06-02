@@ -20,17 +20,17 @@ export type BulkLogEntry = {
 
 const props = withDefaults(
   defineProps<{
-    visible: boolean
-    finished: boolean
-    phaseLabel: string
-    summary: BatchProgressSummary | null
-    current: number
-    total: number
-    success: number
-    error: number
-    elapsedSec: number
-    logs: BulkLogEntry[]
-    errors: string[]
+    visible?: boolean
+    finished?: boolean
+    phaseLabel?: string
+    summary?: BatchProgressSummary | null
+    current?: number
+    total?: number
+    success?: number
+    error?: number
+    elapsedSec?: number
+    logs?: BulkLogEntry[]
+    errors?: string[]
   }>(),
   {
     visible: false,

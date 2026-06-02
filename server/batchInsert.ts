@@ -48,7 +48,16 @@ export interface BatchInsertResult {
 }
 
 export async function batchInsertToEs(req: BatchInsertRequest): Promise<BatchInsertResult> {
-  const { formData, count, esUrl, username, password, mode = 'acs', errorMixPercent, onProgress } = req
+  const {
+    formData,
+    count,
+    esUrl,
+    username,
+    password,
+    mode = 'acs',
+    errorMixPercent,
+    onProgress
+  } = req
   const config = getInsertConfig()
   const metrics = new InsertMetrics(config)
   const indexBase = resolveIndexName(mode)
@@ -136,7 +145,9 @@ export async function batchInsertToEs(req: BatchInsertRequest): Promise<BatchIns
 
     const batches = await Promise.all(
       taskCounts.map((n) =>
-        Promise.resolve().then(() => generateDocsBatch(formData, indexBase, mode, n, errorMixPercent))
+        Promise.resolve().then(() =>
+          generateDocsBatch(formData, indexBase, mode, n, errorMixPercent)
+        )
       )
     )
     metrics.genMs += performance.now() - genStart
@@ -157,6 +168,7 @@ export async function batchInsertToEs(req: BatchInsertRequest): Promise<BatchIns
 
   await flush(true)
   await Promise.all([...inFlight])
+  onProgress?.(success, error, count)
 
   const durationMs = Date.now() - startMs
   const snapshot = metrics.snapshot(count, success, error, durationMs)

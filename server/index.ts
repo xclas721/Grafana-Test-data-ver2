@@ -123,7 +123,15 @@ app.post('/batch-insert', async (req, res) => {
     const reporter = new InsertMetrics(cfg)
     reporter.printReport(result.metrics)
 
-    send({ type: 'done', durationMs: result.durationMs, metrics: result.metrics })
+    send({
+      type: 'done',
+      success: result.success,
+      error: result.error,
+      current: result.success + result.error,
+      total: count,
+      durationMs: result.durationMs,
+      metrics: result.metrics
+    })
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e)
     console.error(`[batch-insert] 失敗：${msg}`)
