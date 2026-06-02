@@ -10,6 +10,8 @@
     "dev": "vite",
     "server": "tsx --tsconfig server/tsconfig.json server/index.ts",
     "server:watch": "tsx watch --tsconfig server/tsconfig.json server/index.ts",
+    "batch-insert": "tsx --tsconfig server/tsconfig.json scripts/run-node-batch-insert.ts",
+    "tune-insert": "tsx --tsconfig server/tsconfig.json scripts/tune-insert-config.ts",
     "generate:api": "node scripts/generate-api.mjs",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",

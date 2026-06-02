@@ -1,34 +1,45 @@
 /**
  * Grafana Test Data — Node.js 後端
  *
- * 提供比瀏覽器更高並發（20 連線 vs 瀏覽器 6 連線）的 ES 批量插入能力。
- * 啟動：npm run server
+ * 並行產生 + 高並發 bulk POST；完成後輸出效能報告與調參建議。
+ * 啟動：npm run server（會載入專案根 `.env.server`）
+ *
+ * 環境變數（可選，見 .env.server.example）：
+ *   SERVER_CONCURRENCY          預設 min(32, CPU×4)
+ *   SERVER_BULK_SIZE            預設 4000
+ *   SERVER_GENERATION_PARALLEL  預設 min(12, CPU)
+ *   SERVER_DOCS_PER_GEN_TASK    預設 100
+ *   SERVER_PROGRESS_LOG_MS      主控台進度間隔，預設 2000
+ *   SERVER_BULK_REFRESH=true    預設 false（refresh=false 較快）
  */
+import { loadEnvServer } from './loadEnvServer.js'
+
+loadEnvServer()
+
 import express from 'express'
 import cors from 'cors'
-import { batchInsertToEs, SERVER_CONCURRENCY, SERVER_BULK_SIZE } from './batchInsert.js'
+import { batchInsertToEs, getInsertConfig } from './batchInsert.js'
+import { InsertMetrics } from './insertMetrics.js'
 
 const app = express()
 app.use(cors())
-app.use(express.json({ limit: '10mb' }))
+app.use(express.json({ limit: '50mb' }))
 
 const PORT = Number(process.env.SERVER_PORT) || 3001
 
-/** GET /health — 確認 server 存活 */
 app.get('/health', (_req, res) => {
-  res.json({ ok: true, concurrency: SERVER_CONCURRENCY, bulkSize: SERVER_BULK_SIZE })
+  const cfg = getInsertConfig()
+  res.json({
+    ok: true,
+    concurrency: cfg.concurrency,
+    bulkSize: cfg.bulkSize,
+    generationParallel: cfg.generationParallel,
+    docsPerGenTask: cfg.docsPerGenTask,
+    bulkRefresh: cfg.bulkRefresh,
+    cpuCount: cfg.cpuCount
+  })
 })
 
-/**
- * POST /batch-insert
- * Body: { formData, count, esUrl, username, password, mode?, errorMixPercent? }
- * Response: { success, error, durationMs }
- */
-/**
- * POST /batch-insert
- * SSE 串流：每 flush 一批就推送進度，前端即時顯示。
- * 格式：每行一個 JSON，最後一行 {"done":true,...}
- */
 app.post('/batch-insert', async (req, res) => {
   const { formData, count, esUrl, username, password, mode, errorMixPercent } = req.body as {
     formData: Record<string, string>
@@ -50,7 +61,8 @@ app.post('/batch-insert', async (req, res) => {
     return
   }
 
-  // SSE headers
+  const cfg = getInsertConfig()
+
   res.setHeader('Content-Type', 'text/event-stream')
   res.setHeader('Cache-Control', 'no-cache')
   res.setHeader('Connection', 'keep-alive')
@@ -61,24 +73,57 @@ app.post('/batch-insert', async (req, res) => {
   }
 
   const startMs = Date.now()
-  console.log(`[${new Date().toLocaleTimeString()}] batch-insert 開始：count=${count}, mode=${mode ?? 'acs'}`)
+  let lastLogMs = 0
+  let lastLoggedCurrent = 0
+
+  console.log(
+    `[${new Date().toLocaleTimeString()}] batch-insert 開始 count=${count.toLocaleString()} mode=${mode ?? 'acs'} | concurrency=${cfg.concurrency} bulk=${cfg.bulkSize} genParallel=${cfg.generationParallel}`
+  )
 
   try {
-    await batchInsertToEs({
-      formData, count, esUrl, username, password, mode, errorMixPercent,
-      onProgress: (success, error, total) => {
-        const current = success + error
-        const pct = Math.round(current / total * 100)
-        if (current % 5000 === 0 || current === total) {
-          console.log(`  進度：${current}/${total} (${pct}%)`)
+    const result = await batchInsertToEs({
+      formData,
+      count,
+      esUrl,
+      username,
+      password,
+      mode,
+      errorMixPercent,
+      onProgress: (success, err, total) => {
+        const current = success + err
+        const now = Date.now()
+        const elapsedSec = (now - startMs) / 1000
+        const shouldLog =
+          current === total ||
+          now - lastLogMs >= cfg.progressLogMs ||
+          current - lastLoggedCurrent >= Math.max(5000, Math.floor(total * 0.05))
+
+        if (shouldLog) {
+          const rate = elapsedSec > 0 ? Math.round(current / elapsedSec) : 0
+          const pct = total > 0 ? Math.round((current / total) * 100) : 0
+          console.log(
+            `  [進度] ${current.toLocaleString()}/${total.toLocaleString()} (${pct}%) | ${rate.toLocaleString()} 筆/s | ok ${success.toLocaleString()} err ${err}`
+          )
+          lastLogMs = now
+          lastLoggedCurrent = current
         }
-        send({ type: 'progress', success, error, current, total, durationMs: Date.now() - startMs })
+
+        send({
+          type: 'progress',
+          success,
+          error: err,
+          current,
+          total,
+          docsPerSec: elapsedSec > 0 ? Math.round(current / elapsedSec) : 0,
+          durationMs: now - startMs
+        })
       }
     })
 
-    const durationMs = Date.now() - startMs
-    console.log(`[${new Date().toLocaleTimeString()}] 完成，${durationMs}ms`)
-    send({ type: 'done', durationMs })
+    const reporter = new InsertMetrics(cfg)
+    reporter.printReport(result.metrics)
+
+    send({ type: 'done', durationMs: result.durationMs, metrics: result.metrics })
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e)
     console.error(`[batch-insert] 失敗：${msg}`)
@@ -89,7 +134,10 @@ app.post('/batch-insert', async (req, res) => {
 })
 
 app.listen(PORT, () => {
-  console.log(`[Grafana Test Data Server] port ${PORT}`)
-  console.log(`  並發數: ${SERVER_CONCURRENCY}（瀏覽器上限 6）`)
-  console.log(`  bulk 大小: ${SERVER_BULK_SIZE} 筆/次`)
+  const cfg = getInsertConfig()
+  console.log(`[Grafana Test Data Server] http://localhost:${PORT}`)
+  console.log(
+    `  並發 ${cfg.concurrency} | bulk ${cfg.bulkSize} | 產生 parallel ${cfg.generationParallel}×${cfg.docsPerGenTask} | refresh=${cfg.bulkRefresh}`
+  )
+  console.log('  完成批量後請看終端「效能報告」與建議的環境變數調整值')
 })

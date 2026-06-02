@@ -76,7 +76,7 @@ export function useNodeBackendInsert(formApi: TestDataFormApi) {
     startTimer()
 
     formApi.setStatus(`透過 Node.js 後端插入 ${total} 筆...`, 'info')
-    pushLog('info', `開始插入 ${total} 筆，並發 20 連線`)
+    pushLog('info', `開始插入 ${total} 筆（詳見 server 終端效能報告）`)
 
     try {
       const res = await fetch(`${NODE_SERVER_URL}/batch-insert`, {

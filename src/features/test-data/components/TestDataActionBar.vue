@@ -234,12 +234,12 @@ const batchCountForTip = computed(() => Math.max(1, Number.parseInt(props.batchS
               variant="outline"
               size="sm"
               :disabled="nodePosting || !isWeightValid"
-              title="透過 Node.js 後端插入，並發 20 連線，速度更快（需先執行 npm run server）"
+              title="透過 Node.js 後端插入（多核心產生 + 高並發 bulk）。需先 npm run server；完成後看終端效能報告調參。"
               @click="emit('postBatchNode')"
             >
               {{ nodePosting ? 'Node 插入中...' : 'Node 批量插入' }}
             </Button>
-            <span class="test-data-post-action__badge">並發 20x · 免 CORS</span>
+            <span class="test-data-post-action__badge">多核心 · 高並發 · 免 CORS</span>
           </div>
         </div>
         <p v-if="!isWeightValid" class="text-xs text-warning mt-2">
