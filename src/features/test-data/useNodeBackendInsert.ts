@@ -39,7 +39,10 @@ export function useNodeBackendInsert(formApi: TestDataFormApi) {
   }
 
   function stopTimer() {
-    if (timer) { clearInterval(timer); timer = null }
+    if (timer) {
+      clearInterval(timer)
+      timer = null
+    }
     progress.elapsedSec = Math.round((Date.now() - startAt) / 1000)
   }
 
@@ -94,7 +97,9 @@ export function useNodeBackendInsert(formApi: TestDataFormApi) {
       })
 
       if (!res.ok || !res.body) {
-        const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` })) as { error?: string }
+        const err = (await res.json().catch(() => ({ error: `HTTP ${res.status}` }))) as {
+          error?: string
+        }
         throw new Error(err.error || `HTTP ${res.status}`)
       }
 
@@ -137,8 +142,14 @@ export function useNodeBackendInsert(formApi: TestDataFormApi) {
               progress.finished = true
               progress.phaseLabel = ''
               stopTimer()
-              pushLog('success', `完成 ${progress.success}/${total}，${durationMs}ms（${speed} 筆/s）`)
-              formApi.setStatus(`Node 完成：${progress.success} 筆，${durationMs}ms（${speed} 筆/s）`, 'success')
+              pushLog(
+                'success',
+                `完成 ${progress.success}/${total}，${durationMs}ms（${speed} 筆/s）`
+              )
+              formApi.setStatus(
+                `Node 完成：${progress.success} 筆，${durationMs}ms（${speed} 筆/s）`,
+                'success'
+              )
             } else if (event.type === 'error') {
               throw new Error(event.message ?? '未知錯誤')
             }

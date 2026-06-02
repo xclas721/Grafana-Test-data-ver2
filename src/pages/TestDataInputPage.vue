@@ -61,7 +61,12 @@ const {
 
 const currencyModalVisible = ref(false)
 
-const { posting: nodePosting, progress: nodeProgress, batchInsertViaNode, closeProgress: closeNodeProgress } = useNodeBackendInsert({
+const {
+  posting: nodePosting,
+  progress: nodeProgress,
+  batchInsertViaNode,
+  closeProgress: closeNodeProgress
+} = useNodeBackendInsert({
   form,
   getFormData,
   generateRandomFields,

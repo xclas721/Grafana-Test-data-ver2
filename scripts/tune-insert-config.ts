@@ -4,7 +4,7 @@
  * 環境：TUNE_SAMPLE=30000（每組筆數）、ES_URL / ES_USER / ES_PASS
  */
 import { batchInsertToEs } from '../server/batchInsert.js'
-import { getInsertConfig, type InsertConfig } from '../server/insertConfig.js'
+import type { InsertConfig } from '../server/insertConfig.js'
 import type { InsertMetricsSnapshot } from '../server/insertMetrics.js'
 import { buildCliFormData } from './cliFormDefaults.js'
 
@@ -28,7 +28,6 @@ function applyEnv(c: TuneCase) {
 
 async function runCase(c: TuneCase): Promise<InsertMetricsSnapshot & { score: number }> {
   applyEnv(c)
-  const cfg = getInsertConfig()
   const result = await batchInsertToEs({
     formData,
     count: SAMPLE,
