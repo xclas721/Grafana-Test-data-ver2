@@ -27,6 +27,44 @@ const routes: RouteRecordRaw[] = [
         name: 'test-data-input',
         meta: { title: 'Test Data Input' },
         component: () => import('@/pages/TestDataInputPage.vue')
+      },
+      {
+        path: 'rate-limit-test',
+        component: () => import('@/layouts/RateLimitLayout.vue'),
+        meta: { title: 'page.rateLimit.group' },
+        children: [
+          { path: '', redirect: { name: 'rate-limit-test-areq-card' } },
+          {
+            path: 'areq-card',
+            name: 'rate-limit-test-areq-card',
+            meta: { title: 'page.rateLimit.areqCard' },
+            component: () => import('@/features/rate-limit/DDoSAreqCardTest.vue')
+          },
+          {
+            path: 'areq-merchant',
+            name: 'rate-limit-test-areq-merchant',
+            meta: { title: 'page.rateLimit.areqMerchant' },
+            component: () => import('@/features/rate-limit/DDoSAreqMerchantTest.vue')
+          },
+          {
+            path: 'creq-checkpoint1',
+            name: 'rate-limit-test-creq-checkpoint1',
+            meta: { title: 'page.rateLimit.creqCheckpoint1' },
+            component: () => import('@/features/rate-limit/DDoSCreqCheckpoint1Test.vue')
+          },
+          {
+            path: 'creq-checkpoint2',
+            name: 'rate-limit-test-creq-checkpoint2',
+            meta: { title: 'page.rateLimit.creqCheckpoint2' },
+            component: () => import('@/features/rate-limit/DDoSCreqCheckpoint2Test.vue')
+          },
+          {
+            path: '3dsmethod',
+            name: 'rate-limit-test-3dsmethod',
+            meta: { title: 'page.rateLimit.threeDSMethod' },
+            component: () => import('@/features/rate-limit/DDoS3DSMethodTest.vue')
+          }
+        ]
       }
     ]
   },

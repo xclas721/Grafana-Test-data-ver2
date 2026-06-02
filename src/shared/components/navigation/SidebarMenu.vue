@@ -69,7 +69,7 @@ import { ref } from 'vue'
 import type { Component } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Wrench, ChevronRight } from 'lucide-vue-next'
+import { Shield, Wrench, ChevronRight } from 'lucide-vue-next'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -90,6 +90,9 @@ interface MenuItem {
 
 const isGroupOpen = (item: MenuItem) => {
   if (!item.children?.length) return false
+  if (item.id === 'rate-limit') {
+    return route.path.startsWith('/rate-limit-test')
+  }
   const paths = item.children.map((c) => c.path)
   return paths.some(
     (p) =>
@@ -103,7 +106,40 @@ const menuTree = ref<MenuItem[]>([
     i18nCode: 'page.tools',
     icon: Wrench,
     isCollapsed: true,
-    children: [{ id: 'tools-test-data', path: '/test-data/input', i18nCode: 'page.form' }]
+    children: [{ id: 'tools-test-data', path: '/test-data/input', i18nCode: 'page.testData.input' }]
+  },
+  {
+    id: 'rate-limit',
+    i18nCode: 'page.rateLimit.group',
+    icon: Shield,
+    isCollapsed: true,
+    children: [
+      {
+        id: 'rate-limit-areq-card',
+        path: '/rate-limit-test/areq-card',
+        i18nCode: 'page.rateLimit.areqCard'
+      },
+      {
+        id: 'rate-limit-areq-merchant',
+        path: '/rate-limit-test/areq-merchant',
+        i18nCode: 'page.rateLimit.areqMerchant'
+      },
+      {
+        id: 'rate-limit-creq-cp1',
+        path: '/rate-limit-test/creq-checkpoint1',
+        i18nCode: 'page.rateLimit.creqCheckpoint1'
+      },
+      {
+        id: 'rate-limit-creq-cp2',
+        path: '/rate-limit-test/creq-checkpoint2',
+        i18nCode: 'page.rateLimit.creqCheckpoint2'
+      },
+      {
+        id: 'rate-limit-3dsmethod',
+        path: '/rate-limit-test/3dsmethod',
+        i18nCode: 'page.rateLimit.threeDSMethod'
+      }
+    ]
   }
 ])
 

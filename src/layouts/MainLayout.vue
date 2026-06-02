@@ -22,7 +22,13 @@
               :home-path="'/'"
               :path-label-map="{
                 '/test-data': 'Test Data',
-                '/test-data/input': 'Test Data Input'
+                '/test-data/input': 'Test Data Input',
+                '/rate-limit-test': 'DDoS 限流測試',
+                '/rate-limit-test/areq-card': 'AReq 卡號限流',
+                '/rate-limit-test/areq-merchant': 'AReq 商戶限流',
+                '/rate-limit-test/creq-checkpoint1': 'CReq 檢查點1',
+                '/rate-limit-test/creq-checkpoint2': 'CReq 檢查點2',
+                '/rate-limit-test/3dsmethod': '3DS Method 限流'
               }"
             />
           </div>

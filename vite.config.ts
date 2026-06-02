@@ -63,6 +63,14 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
           rewrite: (pathValue) => pathValue.replace(new RegExp(`^${proxyApi}`), '/api')
+        },
+        '/acs-auth-web': {
+          target: env.VITE_ACS_AUTH_WEB_PROXY ?? 'http://localhost:8050',
+          changeOrigin: true
+        },
+        '/acs-auth': {
+          target: env.VITE_ACS_AUTH_PROXY ?? 'http://localhost:30100',
+          changeOrigin: true
         }
       }
     },
