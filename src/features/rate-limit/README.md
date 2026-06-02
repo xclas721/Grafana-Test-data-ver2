@@ -19,13 +19,13 @@ src/stores/apiConfig.ts
 
 ## 路由
 
-| 路徑 | 說明 |
-|------|------|
-| `/rate-limit-test/areq-card` | AReq 卡號限流 |
-| `/rate-limit-test/areq-merchant` | AReq 商戶限流 |
-| `/rate-limit-test/creq-checkpoint1` | CReq 檢查點 1 |
-| `/rate-limit-test/creq-checkpoint2` | CReq 檢查點 2 |
-| `/rate-limit-test/3dsmethod` | 3DS Method 限流 |
+| 路徑                                | 說明            |
+| ----------------------------------- | --------------- |
+| `/rate-limit-test/areq-card`        | AReq 卡號限流   |
+| `/rate-limit-test/areq-merchant`    | AReq 商戶限流   |
+| `/rate-limit-test/creq-checkpoint1` | CReq 檢查點 1   |
+| `/rate-limit-test/creq-checkpoint2` | CReq 檢查點 2   |
+| `/rate-limit-test/3dsmethod`        | 3DS Method 限流 |
 
 側欄：**公用程式 → DDoS 限流測試**。
 

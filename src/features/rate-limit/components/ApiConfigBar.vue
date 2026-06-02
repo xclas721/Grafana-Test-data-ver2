@@ -18,12 +18,12 @@ const summaryText = computed(() => {
 </script>
 
 <template>
-  <div
-    class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between w-full px-4 py-3"
-  >
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between w-full px-4 py-3">
     <div class="flex items-center gap-3 min-w-0">
       <span class="text-sm font-semibold shrink-0 text-base-content/80">API 網域</span>
-      <span class="text-sm text-base-content/70 truncate" :title="summaryText">{{ summaryText }}</span>
+      <span class="text-sm text-base-content/70 truncate" :title="summaryText">{{
+        summaryText
+      }}</span>
     </div>
     <div class="dropdown dropdown-end shrink-0 self-end sm:self-auto">
       <label tabindex="0" class="btn btn-primary btn-sm gap-1.5">

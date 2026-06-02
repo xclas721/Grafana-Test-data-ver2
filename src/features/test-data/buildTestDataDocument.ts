@@ -188,11 +188,12 @@ export function buildTestDataDocument(
 
   // riskAssesmentResult：風險評估快照（等於 ares_transStatus，之後不再更新）
   // 只有有 Visa Score 或 Mastercard Score 的交易才寫入，對應 Grafana panel 的 filter 條件
+  // S（SPC）為特定挑戰流程，非 RBA 輸出，不應與 Score 並存
   const hasVisaScore =
     Boolean(form.visaRiskBasedAuthenticationScore) &&
     String(form.visaRiskBasedAuthenticationScore).trim() !== ''
   const hasMastercardScore = form.enableMastercardExtension === 'on'
-  if (hasVisaScore || hasMastercardScore) {
+  if ((hasVisaScore || hasMastercardScore) && form.aresTransStatus !== 'S') {
     doc.riskAssesmentResult = form.aresTransStatus
   }
 
