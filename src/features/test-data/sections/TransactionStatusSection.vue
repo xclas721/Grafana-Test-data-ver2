@@ -326,7 +326,7 @@ const reasonModeOptions: SelectOption[] = [
             :disabled="props.disableTransStatusReason || props.transStatusReasonMode === 'random'"
             @update:model-value="(value) => onReasonValueChange('transStatusReason', String(value))"
           />
-          <p class="text-xs text-base-content/60 mt-1">只有當 ARes 狀態為 R 時才可選擇</p>
+          <p class="text-xs text-base-content/60 mt-1">只有當 ARes 狀態為 R 或 N 時才可選擇</p>
           <p class="text-xs text-error mt-1">可隨機生成</p>
         </div>
         <div>
