@@ -324,6 +324,7 @@ export function useTestDataForm() {
     form.transStatus = next.transStatus
     form.transStatusReason = next.transStatusReason
     form.stateMachineReason = next.stateMachineReason
+    if (next.aresTransStatus) form.aresTransStatus = next.aresTransStatus
     if (next.stateMachineReasonMode) form.stateMachineReasonMode = next.stateMachineReasonMode
 
     if (next.disableChallengeCancel) {

@@ -1,8 +1,9 @@
 import {
+  alignStatusesForSystemMonitorError,
   defaultStateMachineReason,
-  getStateMachineReasonValuesForRandom,
+  isSystemMonitorExternalErrorCode,
+  pickRandomStateMachineReasonAcsWeighted,
   pickRandomStateMachineReasonDssWeighted,
-  reservedStateMachineReasonsForFilter,
   stateMachineReasonForAresForcedPath,
   type ProductMode
 } from '@/shared/constants/stateMachineReason'
@@ -191,18 +192,10 @@ export function rollRandomStatuses(input: RollRandomStatusesInput): RollRandomSt
       } else if (rreqTransStatus === 'NULL_VALUE') {
         stateMachineReason = stateMachineReasonForAresForcedPath(input.activeMode, 'rreqNull')
       } else {
-        const stateMachineReasons = getStateMachineReasonValuesForRandom(input.activeMode)
-        const reserved = reservedStateMachineReasonsForFilter(input.activeMode)
-        const candidates = stateMachineReasons.filter((reason) => !reserved.includes(reason))
-        const pickFrom = candidates.length > 0 ? candidates : stateMachineReasons
-        stateMachineReason = pickFrom[Math.floor(Math.random() * pickFrom.length)] as string
+        stateMachineReason = pickRandomStateMachineReasonAcsWeighted()
       }
     } else {
-      const stateMachineReasons = getStateMachineReasonValuesForRandom(input.activeMode)
-      const reserved = reservedStateMachineReasonsForFilter(input.activeMode)
-      const candidates = stateMachineReasons.filter((reason) => !reserved.includes(reason))
-      const pickFrom = candidates.length > 0 ? candidates : stateMachineReasons
-      stateMachineReason = pickFrom[Math.floor(Math.random() * pickFrom.length)] as string
+      stateMachineReason = pickRandomStateMachineReasonAcsWeighted()
     }
   } else {
     stateMachineReason =
@@ -211,7 +204,18 @@ export function rollRandomStatuses(input: RollRandomStatusesInput): RollRandomSt
         : defaultStateMachineReason(input.activeMode)
   }
 
-  return { aresTransStatus, rreqTransStatus, transStatus, stateMachineReason }
+  const aligned = alignStatusesForSystemMonitorError(stateMachineReason, {
+    aresTransStatus,
+    rreqTransStatus,
+    transStatus
+  })
+
+  return {
+    aresTransStatus: aligned.aresTransStatus,
+    rreqTransStatus: aligned.rreqTransStatus,
+    transStatus: aligned.transStatus,
+    stateMachineReason
+  }
 }
 
 type DependencyInput = {
@@ -228,6 +232,7 @@ export type DependencyOutput = {
   transStatusReason: string
   stateMachineReason: string
   stateMachineReasonMode?: 'fixed'
+  aresTransStatus?: string
   disableRreqTransStatus: boolean
   disableTransStatusReason: boolean
   disableStateMachineReason: boolean
@@ -241,6 +246,9 @@ export function resolveStatusDependencies(input: DependencyInput): DependencyOut
   let transStatusReason = input.transStatusReason
   let stateMachineReason = input.stateMachineReason
   let stateMachineReasonMode: 'fixed' | undefined
+
+  const fixedSystemMonitorError =
+    input.activeMode !== 'dss' && isSystemMonitorExternalErrorCode(input.stateMachineReason)
 
   let disableRreqTransStatus = true
   let disableTransStatusReason = true
@@ -262,7 +270,11 @@ export function resolveStatusDependencies(input: DependencyInput): DependencyOut
     transStatusReason = 'NULL_VALUE'
   }
 
-  if (input.activeMode === 'dss') {
+  if (fixedSystemMonitorError) {
+    stateMachineReason = input.stateMachineReason
+    stateMachineReasonMode = 'fixed'
+    disableStateMachineReason = false
+  } else if (input.activeMode === 'dss') {
     disableStateMachineReason = false
   } else if (ares === 'Y') {
     disableStateMachineReason = true
@@ -288,12 +300,29 @@ export function resolveStatusDependencies(input: DependencyInput): DependencyOut
     disableChallengeCancel = false
   }
 
+  let aresTransStatusOut: string | undefined
+  if (input.activeMode !== 'dss' && isSystemMonitorExternalErrorCode(stateMachineReason)) {
+    const aligned = alignStatusesForSystemMonitorError(stateMachineReason, {
+      aresTransStatus: ares,
+      rreqTransStatus,
+      transStatus
+    })
+    if (aligned.aresTransStatus !== ares) aresTransStatusOut = aligned.aresTransStatus
+    rreqTransStatus = aligned.rreqTransStatus
+    transStatus = aligned.transStatus
+    if (aligned.aresTransStatus === 'C' && aligned.rreqTransStatus === 'N') {
+      disableChallengeCancel = false
+      disableRreqTransStatus = false
+    }
+  }
+
   return {
     transStatus,
     rreqTransStatus,
     transStatusReason,
     stateMachineReason,
     stateMachineReasonMode,
+    aresTransStatus: aresTransStatusOut,
     disableRreqTransStatus,
     disableTransStatusReason,
     disableStateMachineReason,

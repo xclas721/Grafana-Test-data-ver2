@@ -63,15 +63,17 @@ fetchElasticsearchBulk()               → POST /_bulk 送進 ES
 
 #### 來源：`rollRandomStatuses()` + `resolveStatusDependencies()`
 
-| `ares_transStatus` | `rreq_transStatus` | `stateMachineReason`   |
-| ------------------ | ------------------ | ---------------------- |
-| Y                  | —                  | ACS 固定免密路徑代碼   |
-| C / D              | Y                  | 挑戰成功路徑代碼       |
-| C / D              | NULL_VALUE         | 挑戰放棄路徑代碼       |
-| C / D              | N                  | 隨機抽（排除保留代碼） |
-| 其他               | —                  | 隨機抽（排除保留代碼） |
+| `ares_transStatus` | `rreq_transStatus` | `stateMachineReason`                     |
+| ------------------ | ------------------ | ---------------------------------------- |
+| Y                  | —                  | ACS 固定免密路徑代碼                     |
+| C / D              | Y                  | 挑戰成功路徑代碼                         |
+| C / D              | NULL_VALUE         | 挑戰放棄路徑代碼                         |
+| C / D              | N                  | ACS 加權隨機（含 System Monitor 錯誤碼） |
+| 其他               | —                  | ACS 加權隨機（含 System Monitor 錯誤碼） |
 
-**✅ EMV 正確性**：`stateMachineReason` 是 HiTRUST 內部欄位，非 EMV spec 標準欄位，邏輯符合後端 `ThreedsTransServiceCore` 的實際寫入行為。
+**System Monitor（I-05 / I-08 / I-10）**：隨機或手動選 `3101–3199`、`3301–3399`、`3401–3499` 時，會呼叫 `alignStatusesForSystemMonitorError()`，將 `transStatus` 設為 `N`（排除 Grafana 查詢的 `mustNot transStatus∈{Y,A,C,D,I}`），並對 RReq/OTP 錯誤補上 `ares=C`、`rreq=N`。
+
+詳見 [acs-system-monitor-fake-data-analysis.md](./acs-system-monitor-fake-data-analysis.md)。
 
 ---
 
