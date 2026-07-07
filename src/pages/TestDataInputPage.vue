@@ -45,7 +45,6 @@ const {
   expectedTransactionSuccessRate,
   expectedFrictionlessRate,
   expectedChallengeSuccessRate,
-  disableCardScheme,
   disableMastercardExtension,
   disableVisaScoreRandom,
   showMastercardExtension,
@@ -301,7 +300,6 @@ const activeCloseProgress = computed(() =>
         v-model:enable-mastercard-extension="form.enableMastercardExtension"
         v-model:enable-mastercard-extension-random="form.enableMastercardExtensionRandom"
         v-model:enable-visa-score-random="form.enableVisaScoreRandom"
-        :disable-card-scheme="disableCardScheme"
         :disable-mastercard-extension="disableMastercardExtension"
         :disable-visa-score-random="disableVisaScoreRandom"
         :show-mastercard-extension="showMastercardExtension"

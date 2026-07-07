@@ -243,9 +243,6 @@ export function useTestDataForm() {
   const expectedFrictionlessRate = computed(() => rates.value.expectedFrictionlessRate)
   const expectedChallengeSuccessRate = computed(() => rates.value.expectedChallengeSuccessRate)
 
-  const disableCardScheme = computed(
-    () => form.enableVisaScoreRandom || form.enableMastercardExtension
-  )
   const disableMastercardExtension = computed(() => form.enableVisaScoreRandom)
   const disableVisaScoreRandom = computed(() => form.enableMastercardExtension)
   const showMastercardExtension = computed(() => form.enableMastercardExtension)
@@ -603,7 +600,7 @@ export function useTestDataForm() {
     form.enableCardSchemeRandom = true
     form.enableMastercardExtension = false
     form.enableMastercardExtensionRandom = false
-    form.enableVisaScoreRandom = true
+    form.enableVisaScoreRandom = false
     form.enableExecTimeRandom = true
     form.enableCreqExecTimeRandom = true
     form.enableRreqExecTimeRandom = true
@@ -783,7 +780,6 @@ export function useTestDataForm() {
     expectedTransactionSuccessRate,
     expectedFrictionlessRate,
     expectedChallengeSuccessRate,
-    disableCardScheme,
     disableMastercardExtension,
     disableVisaScoreRandom,
     showMastercardExtension,

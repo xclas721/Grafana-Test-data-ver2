@@ -75,10 +75,6 @@ export function randomizeBusinessFields(
     updates.cardScheme = effectiveCardScheme
   }
 
-  if (input.enableAcctNumberRandom) {
-    updates.acctNumber = randomAcctNumberByScheme(effectiveCardScheme, random)
-  }
-
   if (input.enableAcquirerMerchantIdRandom) {
     let merchantId = randomDigits(7, random)
     if (merchantId.startsWith('0')) merchantId = `1${merchantId.substring(1)}`
@@ -95,20 +91,24 @@ export function randomizeBusinessFields(
     updates.mcc = option.mcc
   }
 
-  if (input.enableVisaScoreRandom) {
+  if (effectiveCardScheme === 'V' && input.enableVisaScoreRandom) {
     updates.visaRiskBasedAuthenticationScore = String(Math.floor(random() * 100))
-    updates.cardScheme = 'V'
-    effectiveCardScheme = 'V'
   }
 
-  if (input.enableMastercardExtension && input.enableMastercardExtensionRandom) {
+  if (
+    effectiveCardScheme === 'M' &&
+    input.enableMastercardExtension &&
+    input.enableMastercardExtensionRandom
+  ) {
     updates.mastercardScore = String(Math.floor(random() * 651))
     updates.mastercardDecision = pickRandom(['Not Low Risk', 'Low Risk'], random)
-    updates.cardScheme = 'M'
-    effectiveCardScheme = 'M'
   }
 
-  if (input.aresTransStatus === 'R' || input.aresTransStatus === 'N') {
+  if (input.enableAcctNumberRandom) {
+    updates.acctNumber = randomAcctNumberByScheme(effectiveCardScheme, random)
+  }
+
+  if (input.aresTransStatus === 'R') {
     if (input.transStatusReasonMode === 'random') {
       const candidates = getTransStatusReasonCandidates(effectiveCardScheme)
       updates.transStatusReason =
