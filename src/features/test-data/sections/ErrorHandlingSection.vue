@@ -54,7 +54,7 @@ const presets = EMV_THREEDS_ERROR_PRESETS
         <code class="text-xs bg-base-200 px-1 rounded">errorCode = NULL_VALUE</code>
         的文件。若要看到統計，請套用下方預設（例如
         <strong>101</strong>、<strong>203</strong>）或手動輸入三位數代碼與
-        <code class="text-xs bg-base-200 px-1 rounded">errorComponent</code>（S／A／D）。
+        <code class="text-xs bg-base-200 px-1 rounded">errorComponent</code>（S／A／D／C）。
         <span v-if="props.activeMode === 'dss'" class="block mt-1">
           目前為 <strong>3DSS</strong> 模式：插入索引為
           <code class="text-xs bg-base-200 px-1 rounded">3dss-transaction-*</code>

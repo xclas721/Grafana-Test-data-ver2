@@ -17,6 +17,7 @@ const props = defineProps<{
   mastercardStatus: string
   visaRiskBasedAuthenticationScore: string
   enableAcctNumberRandom: boolean
+  cardPoolRatio: string
   enableMastercardExtension: boolean
   enableMastercardExtensionRandom: boolean
   enableVisaScoreRandom: boolean
@@ -41,6 +42,7 @@ const emit = defineEmits<{
   'update:mastercardStatus': [value: string]
   'update:visaRiskBasedAuthenticationScore': [value: string]
   'update:enableAcctNumberRandom': [value: boolean]
+  'update:cardPoolRatio': [value: string]
   'update:enableMastercardExtension': [value: boolean]
   'update:enableMastercardExtensionRandom': [value: boolean]
   'update:enableVisaScoreRandom': [value: boolean]
@@ -127,6 +129,26 @@ const mastercardDecisionOptions: SelectOption[] = [
               隨機生成時包含此欄位
             </label>
           </div>
+          <div class="flex items-center gap-2 mt-2">
+            <label for="cardPoolRatio" class="text-sm text-base-content/60 whitespace-nowrap">
+              卡號重複倍率
+            </label>
+            <input
+              type="number"
+              id="cardPoolRatio"
+              min="1"
+              class="input input-bordered input-sm w-20"
+              :value="props.cardPoolRatio"
+              @input="
+                (event) =>
+                  emit('update:cardPoolRatio', String((event.target as HTMLInputElement).value))
+              "
+            />
+          </div>
+          <p class="text-xs text-base-content/60 mt-1">
+            僅「批量生成並POST」生效：卡號池大小 = 本次總筆數 ÷ 倍率，卡號會重複出現以測去重效能。1
+            = 全新不重複。
+          </p>
           <p class="text-xs text-error mt-2">此欄位不會 POST 出去，僅用於自動生成其他欄位</p>
           <p class="text-xs text-base-content/60 mt-3">
             勾選隨機生成時，會依卡組織前綴產生帳號原始值

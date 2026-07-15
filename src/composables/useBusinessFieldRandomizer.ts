@@ -20,7 +20,16 @@ export type BusinessRandomInput = {
   enableMastercardExtensionRandom: boolean
   acquirerBinOptions: readonly string[]
   merchantOptions: readonly MerchantOption[]
+  // 卡號重複池：指定本筆要用的卡組織／卡號（來自批量抽樣），
+  // 有值時取代隨機生成，讓同一張卡在多筆交易間重複出現以測試去重效能。
+  forcedCardScheme?: string
+  forcedAcctNumber?: string
 }
+
+export type PoolCard = { scheme: string; acctNumber: string }
+
+// 隨機卡組織候選（排除 U/UL，與 Grafana 下拉一致）
+export const RANDOM_CARD_SCHEMES = ['V', 'M', 'J', 'A', 'C', 'D', 'P', 'S', 'E', 'T'] as const
 
 export type BusinessRandomResult = {
   updates: Record<string, string>
@@ -55,6 +64,26 @@ function randomAcctNumberByScheme(scheme: string, random: () => number): string 
   return `${prefix}${randomDigits(13, random)}`
 }
 
+/**
+ * 產生固定大小的卡號池。批量灌資料時每筆從池中隨機抽一張，
+ * 讓卡號重複出現（模擬同一持卡人多次交易），才能測出去重 panel 的真實效能。
+ * 池中每張卡自帶卡組織（前綴決定 scheme），抽用時卡組織跟著這張卡走，避免前綴與 cardScheme 不一致。
+ */
+export function generateCardPool(
+  size: number,
+  schemes: readonly string[],
+  random: () => number = Math.random
+): PoolCard[] {
+  const schemeList = schemes.length > 0 ? schemes : ['V']
+  const count = Math.max(1, Math.floor(size))
+  const pool: PoolCard[] = []
+  for (let i = 0; i < count; i++) {
+    const scheme = schemeList[Math.floor(random() * schemeList.length)] as string
+    pool.push({ scheme, acctNumber: randomAcctNumberByScheme(scheme, random) })
+  }
+  return pool
+}
+
 export function randomizeBusinessFields(
   input: BusinessRandomInput,
   random: () => number = Math.random
@@ -68,11 +97,13 @@ export function randomizeBusinessFields(
   }
 
   if (input.enableCardSchemeRandom) {
-    effectiveCardScheme = pickRandom(
-      ['V', 'M', 'J', 'A', 'C', 'D', 'P', 'S', 'E', 'T', 'U'],
-      random
-    )
+    // 有卡號池指定卡時卡組織跟著這張卡走；否則隨機。
+    // U（UL）在 Grafana 卡組織下拉選單中被排除（cardSchemeVisibleInGrafanaDropdown），
+    // 隨機測試資料不產生 U，避免總交易數等統計 panel 與灌入筆數對不上
+    effectiveCardScheme = input.forcedCardScheme ?? pickRandom(RANDOM_CARD_SCHEMES, random)
     updates.cardScheme = effectiveCardScheme
+  } else if (input.forcedCardScheme) {
+    effectiveCardScheme = input.forcedCardScheme
   }
 
   if (input.enableAcquirerMerchantIdRandom) {
@@ -105,7 +136,8 @@ export function randomizeBusinessFields(
   }
 
   if (input.enableAcctNumberRandom) {
-    updates.acctNumber = randomAcctNumberByScheme(effectiveCardScheme, random)
+    updates.acctNumber =
+      input.forcedAcctNumber ?? randomAcctNumberByScheme(effectiveCardScheme, random)
   }
 
   if (input.aresTransStatus === 'R') {

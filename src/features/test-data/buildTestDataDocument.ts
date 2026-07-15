@@ -126,6 +126,12 @@ export function buildTestDataDocument(
   if (form.authenticationMethod && form.authenticationMethod !== 'NULL_VALUE') {
     doc.authenticationMethod = form.authenticationMethod
   }
+  if (form.otpFailedCount !== undefined && form.otpFailedCount !== '') {
+    doc.otpFailedCount = form.otpFailedCount
+  }
+  if (form.resendCounter !== undefined && form.resendCounter !== '') {
+    doc.resendCounter = form.resendCounter
+  }
   if (form.authenticationType && form.authenticationType !== 'NULL_VALUE') {
     doc.authenticationType = form.authenticationType
   }

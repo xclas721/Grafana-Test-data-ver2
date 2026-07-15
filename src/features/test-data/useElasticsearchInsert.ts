@@ -5,6 +5,12 @@ import {
   pickRandomBatchErrorPreset
 } from '@/shared/constants/emvThreeDSErrorPresets'
 import { getBatchErrorMixPercent, isBatchErrorMixEnabled } from '@/shared/utils/batchErrorMix'
+import { applyChallengeVerificationMix } from '@/shared/utils/challengeVerificationMix'
+import {
+  generateCardPool,
+  RANDOM_CARD_SCHEMES,
+  type PoolCard
+} from '@/composables/useBusinessFieldRandomizer'
 import {
   type ElasticsearchBulkResponse,
   fetchElasticsearchBulk
@@ -38,7 +44,7 @@ export type TestDataFormApi = {
     endDateTime: string
   }
   getFormData: () => TestDataFormMap
-  generateRandomFields: () => boolean
+  generateRandomFields: (forcedCard?: PoolCard) => boolean
   refreshAutoTimeRange: () => void
   setStatus: (message: string, type: 'success' | 'warning' | 'info' | 'error') => void
 }
@@ -212,6 +218,23 @@ export function useElasticsearchInsert(formApi: TestDataFormApi) {
         concurrency: BULK_CONCURRENCY
       })
 
+      let cardPool: PoolCard[] | null = null
+      if (dataBase.enableAcctNumberRandom === 'on') {
+        const ratio = Math.max(1, Number.parseInt(String(dataBase.cardPoolRatio || '10'), 10) || 1)
+        if (ratio > 1) {
+          const schemes =
+            dataBase.enableCardSchemeRandom === 'on'
+              ? [...RANDOM_CARD_SCHEMES]
+              : [String(dataBase.cardScheme || 'V')]
+          const poolSize = Math.max(1, Math.ceil(total / ratio))
+          cardPool = generateCardPool(poolSize, schemes)
+          pushLog(
+            'info',
+            `卡號重複池：${poolSize} 張卡（倍率 ${ratio}，共 ${total} 筆，平均每卡約 ${ratio} 次）`
+          )
+        }
+      }
+
       const baseUrl = dataBase.baseUrl
       const auth = basicAuthHeader(dataBase.username, dataBase.password)
       const inFlight = new Set<Promise<void>>()
@@ -359,7 +382,10 @@ export function useElasticsearchInsert(formApi: TestDataFormApi) {
 
         for (let i = 0; i < count; i++) {
           try {
-            if (!formApi.generateRandomFields()) {
+            const forcedCard = cardPool
+              ? cardPool[Math.floor(Math.random() * cardPool.length)]
+              : undefined
+            if (!formApi.generateRandomFields(forcedCard)) {
               throw new Error('隨機欄位生成失敗')
             }
             const data = { ...formApi.getFormData() }
@@ -370,6 +396,9 @@ export function useElasticsearchInsert(formApi: TestDataFormApi) {
               } else {
                 applyErrorPresetToFormData(data, PRESET_NO_ERROR)
               }
+            }
+            if (formApi.form.mode === 'acs' && data.enableAuthenticationMethodRandom === 'on') {
+              applyChallengeVerificationMix(data)
             }
             if (date) data.currentDate = dateStr
 

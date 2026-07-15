@@ -108,6 +108,25 @@ export const EMV_THREEDS_ERROR_PRESETS: EmvThreeDSErrorPreset[] = [
     errorDescription: 'Transaction data not valid',
     errorDetail: 'acctNumber',
     errorMessageType: 'AReq'
+  },
+  {
+    id: '201-C',
+    shortLabel: '201·C',
+    errorCode: '201',
+    errorComponent: 'C',
+    errorDescription: 'Required Data Element Missing',
+    errorDetail: 'sdkTransID',
+    errorMessageType: 'CReq'
+  },
+  {
+    id: '203-C',
+    shortLabel: '203·C',
+    errorCode: '203',
+    errorComponent: 'C',
+    errorDescription:
+      'Format of one or more Data Elements is Invalid according to the Specification',
+    errorDetail: 'sdkTransID',
+    errorMessageType: 'CReq'
   }
 ]
 
@@ -118,13 +137,17 @@ export const BATCH_ERROR_PRESETS: EmvThreeDSErrorPreset[] = EMV_THREEDS_ERROR_PR
 
 /**
  * 依模式抽樣：
- * - 3DSS：索引為 3dss-transaction-*，錯誤摘要依 errorComponent 分 A／D／S，故混入時抽**全集**（含 S、D、A）以便三欄皆有樣本。
- * - ACS：以 A 為主（若無 A 則退回全集）。
+ * - 3DSS：索引為 3dss-transaction-*，錯誤摘要依 errorComponent 分 A／D／S。
+ * - ACS：依 D 35%、S 30%、A 20%、C 15% 抽樣，供 H-03～H-08 使用。
  */
 export function pickRandomBatchErrorPreset(mode: 'acs' | 'dss'): EmvThreeDSErrorPreset {
-  const forAcs = BATCH_ERROR_PRESETS.filter((p) => p.errorComponent === 'A')
+  const componentRoll = Math.random()
+  const component =
+    componentRoll < 0.35 ? 'D' : componentRoll < 0.65 ? 'S' : componentRoll < 0.85 ? 'A' : 'C'
   const pool =
-    mode === 'dss' ? BATCH_ERROR_PRESETS : forAcs.length > 0 ? forAcs : BATCH_ERROR_PRESETS
+    mode === 'dss'
+      ? BATCH_ERROR_PRESETS.filter((preset) => preset.errorComponent !== 'C')
+      : BATCH_ERROR_PRESETS.filter((preset) => preset.errorComponent === component)
   return pool[Math.floor(Math.random() * pool.length)]!
 }
 

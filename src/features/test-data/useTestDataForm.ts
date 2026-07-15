@@ -1,7 +1,12 @@
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { defaultStateMachineReason } from '@/shared/constants/stateMachineReason'
-import { randomizeBusinessFields } from '@/composables/useBusinessFieldRandomizer'
+import {
+  generateCardPool,
+  randomizeBusinessFields,
+  RANDOM_CARD_SCHEMES,
+  type PoolCard
+} from '@/composables/useBusinessFieldRandomizer'
 import { randomizeThreeDSDeviceFields } from '@/composables/useTestDataRandomizer'
 import { randomizeTimingAndGeoFields } from '@/composables/useTimingAndGeoRandomizer'
 import {
@@ -16,6 +21,7 @@ import {
   applyErrorPresetToFormData,
   pickRandomBatchErrorPreset
 } from '@/shared/constants/emvThreeDSErrorPresets'
+import { applyChallengeVerificationMix } from '@/shared/utils/challengeVerificationMix'
 import {
   buildTestDataDocument,
   getFormDataFromState,
@@ -183,6 +189,7 @@ export function useTestDataForm() {
     enablePurchaseAmountRandom: true,
     enableCardSchemeRandom: true,
     enableAcctNumberRandom: true,
+    cardPoolRatio: '10',
     enableAcquirerMerchantIdRandom: true,
     enableAcquirerBinRandom: true,
     enableMerchantRandom: true,
@@ -392,7 +399,7 @@ export function useTestDataForm() {
     }
   }
 
-  function generateRandomFields() {
+  function generateRandomFields(forcedCard?: PoolCard) {
     if (aresWeightTotal.value !== 100) {
       setStatus(`ARes 權重未分配 ${aresWeightUnallocated.value}% ，請調整至 100%`, 'warning')
       return false
@@ -468,7 +475,9 @@ export function useTestDataForm() {
       enableMastercardExtension: form.enableMastercardExtension,
       enableMastercardExtensionRandom: form.enableMastercardExtensionRandom,
       acquirerBinOptions: ACQUIRER_BIN_OPTIONS,
-      merchantOptions: MERCHANT_MCC_OPTIONS
+      merchantOptions: MERCHANT_MCC_OPTIONS,
+      forcedCardScheme: forcedCard?.scheme,
+      forcedAcctNumber: forcedCard?.acctNumber
     })
     applyUpdates(businessRandomResult.updates)
     if (businessRandomResult.updates.cardScheme) {
@@ -643,6 +652,9 @@ export function useTestDataForm() {
       if (form.enableBatchErrorMix && Math.random() * 100 < mixPercent) {
         applyErrorPresetToFormData(fd, pickRandomBatchErrorPreset(form.mode))
       }
+      if (form.mode === 'acs' && fd.enableAuthenticationMethodRandom === 'on') {
+        applyChallengeVerificationMix(fd)
+      }
       return {
         rowNo: index + 1,
         ...buildTestDataDocument(fd, indexName).document
@@ -785,6 +797,8 @@ export function useTestDataForm() {
     showMastercardExtension,
     loadDefaults,
     generateRandomFields,
+    generateCardPool,
+    RANDOM_CARD_SCHEMES,
     generateOne,
     generateBatchPreview,
     getFormData,

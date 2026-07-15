@@ -297,6 +297,7 @@ const activeCloseProgress = computed(() =>
         v-model:mastercard-status="form.mastercardStatus"
         v-model:visa-risk-based-authentication-score="form.visaRiskBasedAuthenticationScore"
         v-model:enable-acct-number-random="form.enableAcctNumberRandom"
+        v-model:card-pool-ratio="form.cardPoolRatio"
         v-model:enable-mastercard-extension="form.enableMastercardExtension"
         v-model:enable-mastercard-extension-random="form.enableMastercardExtensionRandom"
         v-model:enable-visa-score-random="form.enableVisaScoreRandom"

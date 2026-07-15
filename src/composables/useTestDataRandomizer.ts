@@ -54,9 +54,12 @@ export function randomizeThreeDSDeviceFields(
 ): ThreeDSDeviceRandomResult {
   const updates: ThreeDSDeviceRandomResult = {}
 
-  if (input.enableMessageCategory)
+  if (input.enableMessageCategory) {
     updates.messageCategory = pickRandom(['01', '02', '80', '85', '86'], random)
-  if (input.enableDeviceChannel) updates.deviceChannel = pickRandom(['02', '03'], random)
+  }
+  if (input.enableDeviceChannel) {
+    updates.deviceChannel = pickRandom(['02', '03'], random)
+  }
   if (input.enableThreeDSRequestorChallengeInd) {
     updates.threeDSRequestorChallengeInd = pickRandom(
       ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'],
@@ -80,12 +83,18 @@ export function randomizeThreeDSDeviceFields(
       random
     )
   }
-  if (input.enableDeviceAdvertisingIdRandom) updates.deviceAdvertisingId = randomHex(32, random)
-  if (input.enableThreeDSCompIndRandom) updates.threeDSCompInd = random() < 0.5 ? 'Y' : 'N'
-  if (input.enableAuthenticationMethodRandom)
-    updates.authenticationMethod = pickRandom(['01', '02', '03', '04', '05'], random)
-  if (input.enableAuthenticationTypeRandom)
+  if (input.enableDeviceAdvertisingIdRandom) {
+    updates.deviceAdvertisingId = randomHex(32, random)
+  }
+  if (input.enableThreeDSCompIndRandom) {
+    updates.threeDSCompInd = random() < 0.5 ? 'Y' : 'N'
+  }
+  if (input.enableAuthenticationMethodRandom) {
+    updates.authenticationMethod = pickRandom(['01', '02', '03', '04', '05', '09'], random)
+  }
+  if (input.enableAuthenticationTypeRandom) {
     updates.authenticationType = pickRandom(['01', '02', '03', '04', '05'], random)
+  }
 
   return updates
 }
